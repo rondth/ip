@@ -4,8 +4,10 @@ import java.util.Scanner;
  * Starts the Henry chatbot application.
  */
 public class Henry {
+    private static final int MAX_TASKS = 100;
+
     /**
-     * Greets the user, echoes each command, and exits when the user enters bye.
+     * Greets the user, stores tasks, lists saved tasks, and exits when the user enters bye.
      *
      * @param args command-line arguments; not used
      */
@@ -25,6 +27,9 @@ public class Henry {
         System.out.println(separator);
 
         Scanner scanner = new Scanner(System.in);
+        String[] tasks = new String[MAX_TASKS];
+        int taskCount = 0;
+
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
             if (command.equals("bye")) {
@@ -33,7 +38,15 @@ public class Henry {
                 break;
             }
 
-            System.out.println(command);
+            if (command.equals("list")) {
+                for (int i = 0; i < taskCount; i++) {
+                    System.out.println((i + 1) + ". " + tasks[i]);
+                }
+            } else {
+                tasks[taskCount] = command;
+                taskCount++;
+                System.out.println("added: " + command);
+            }
             System.out.println(separator);
         }
     }
