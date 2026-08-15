@@ -13,6 +13,9 @@ src/main/resources/docs/
 *.iml
 bin/
 
+# Codex Skills
+.codex/
+
 # Temp files
 _temp/
 
