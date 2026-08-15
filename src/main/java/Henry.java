@@ -7,8 +7,8 @@ public class Henry {
     private static final int MAX_TASKS = 100;
 
     /**
-     * Greets the user, stores tasks, marks tasks as done, lists saved tasks, and exits when
-     * the user enters bye.
+     * Greets the user, stores tasks, updates task completion, lists saved tasks, and exits
+     * when the user enters bye.
      *
      * @param args command-line arguments; not used
      */
@@ -52,6 +52,12 @@ public class Henry {
                 isDone[taskIndex] = true;
                 System.out.println(" Nice! I've marked this task as done:");
                 System.out.println("   [X] " + tasks[taskIndex]);
+            } else if (command.startsWith("unmark ")) {
+                int taskNumber = Integer.parseInt(command.substring(7).trim());
+                int taskIndex = taskNumber - 1;
+                isDone[taskIndex] = false;
+                System.out.println(" OK, I've marked this task as not done yet:");
+                System.out.println("   [ ] " + tasks[taskIndex]);
             } else {
                 tasks[taskCount] = command;
                 taskCount++;
