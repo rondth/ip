@@ -131,11 +131,163 @@ ____________________________________________________________
 #### Expected output after step 1
 
 ```text
-The todo command needs more information.
+A todo needs a description. For example: todo borrow a book
 ____________________________________________________________
 ```
 
 #### Expected output after step 2
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### UI-3: Reject malformed commands and continue
+
+**Aim:** Verify specific errors for malformed task, mark, and unknown commands without terminating Henry.
+
+| Step | Input |
+| --- | --- |
+| 1 | `deadline homework` |
+| 2 | `deadline /by Friday` |
+| 3 | `deadline homework /by` |
+| 4 | `event meeting` |
+| 5 | `event meeting /from 2pm` |
+| 6 | `event /from 2pm /to 3pm` |
+| 7 | `event meeting /from /to 3pm` |
+| 8 | `event meeting /from 2pm /to` |
+| 9 | `mark` |
+| 10 | `mark first` |
+| 11 | `mark 1` |
+| 12 | `todo borrow book` |
+| 13 | `mark 2` |
+| 14 | `unmark 0` |
+| 15 | `blah` |
+| 16 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+A deadline needs '/by'. For example: deadline submit report /by Friday
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+A deadline needs a description before '/by'.
+____________________________________________________________
+```
+
+#### Expected output after step 3
+
+```text
+A deadline needs a date or time after '/by'.
+____________________________________________________________
+```
+
+#### Expected output after step 4
+
+```text
+An event needs '/from' and '/to'. For example: event meeting /from 2pm /to 3pm
+____________________________________________________________
+```
+
+#### Expected output after step 5
+
+```text
+An event needs an ending time introduced by '/to'.
+____________________________________________________________
+```
+
+#### Expected output after step 6
+
+```text
+An event needs a description before '/from'.
+____________________________________________________________
+```
+
+#### Expected output after step 7
+
+```text
+An event needs a starting time after '/from'.
+____________________________________________________________
+```
+
+#### Expected output after step 8
+
+```text
+An event needs an ending time after '/to'.
+____________________________________________________________
+```
+
+#### Expected output after step 9
+
+```text
+Please specify a task number. For example: mark 1
+____________________________________________________________
+```
+
+#### Expected output after step 10
+
+```text
+'first' is not a valid task number.
+____________________________________________________________
+```
+
+#### Expected output after step 11
+
+```text
+There are no tasks to mark yet.
+____________________________________________________________
+```
+
+#### Expected output after step 12
+
+```text
+ Got it. I've added this task:
+   [T][ ] borrow book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 13
+
+```text
+Task 2 does not exist. Choose a number from 1 to 1.
+____________________________________________________________
+```
+
+#### Expected output after step 14
+
+```text
+Task 0 does not exist. Choose a number from 1 to 1.
+____________________________________________________________
+```
+
+#### Expected output after step 15
+
+```text
+I don't recognise that command. Try todo, deadline, event, list, mark, unmark, or bye.
+____________________________________________________________
+```
+
+#### Expected output after step 16
 
 ```text
 Bye. Hope to see you again soon!
