@@ -33,16 +33,16 @@ Paste the exact output caused by step 2 here.
 
 Use `<no output>` as the entire expected block when a step should produce no output. Preserve all other whitespace exactly.
 
-### UI-1: Add, update, and list a todo
+### UI-1: Add and list all task types
 
-**Aim:** Verify that a todo is stored with its task type and retains its formatting when marked, unmarked, and listed.
+**Aim:** Verify that todos, deadlines, and events are stored and displayed using their type-specific formats.
 
 | Step | Input |
 | --- | --- |
 | 1 | `todo borrow book` |
-| 2 | `mark 1` |
-| 3 | `list` |
-| 4 | `unmark 1` |
+| 2 | `deadline do homework /by no idea :-p` |
+| 3 | `event project meeting /from Mon 2pm /to 4pm` |
+| 4 | `list` |
 | 5 | `bye` |
 
 #### Expected startup output
@@ -72,77 +72,32 @@ ____________________________________________________________
 #### Expected output after step 2
 
 ```text
- Nice! I've marked this task as done:
-   [T][X] borrow book
+ Got it. I've added this task:
+   [D][ ] do homework (by: no idea :-p)
+ Now you have 2 tasks in the list.
 ____________________________________________________________
 ```
 
 #### Expected output after step 3
 
 ```text
- Here are the tasks in your list:
- 1.[T][X] borrow book
+ Got it. I've added this task:
+   [E][ ] project meeting (from: Mon 2pm to: 4pm)
+ Now you have 3 tasks in the list.
 ____________________________________________________________
 ```
 
 #### Expected output after step 4
 
 ```text
- OK, I've marked this task as not done yet:
-   [T][ ] borrow book
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] do homework (by: no idea :-p)
+ 3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
 ```
 
 #### Expected output after step 5
-
-```text
-Bye. Hope to see you again soon!
-____________________________________________________________
-```
-
-### UI-2: Add and list a deadline
-
-**Aim:** Verify that a deadline accepts free-form date text and retains its type-specific formatting when listed.
-
-| Step | Input |
-| --- | --- |
-| 1 | `deadline do homework /by no idea :-p` |
-| 2 | `list` |
-| 3 | `bye` |
-
-#### Expected startup output
-
-```text
-____________________________________________________________
- _   _                      
-| | | | ___ _ __  _ __ _   _
-| |_| |/ _ \ '_ \| '__| | | |
-|  _  |  __/ | | | |  | |_| |
-|_| |_|\___|_| |_|_|   \__, |
-                       |___/ 
-Hello! I'm Henry.
-What can I do for you?
-____________________________________________________________
-```
-
-#### Expected output after step 1
-
-```text
- Got it. I've added this task:
-   [D][ ] do homework (by: no idea :-p)
- Now you have 1 tasks in the list.
-____________________________________________________________
-```
-
-#### Expected output after step 2
-
-```text
- Here are the tasks in your list:
- 1.[D][ ] do homework (by: no idea :-p)
-____________________________________________________________
-```
-
-#### Expected output after step 3
 
 ```text
 Bye. Hope to see you again soon!

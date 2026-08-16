@@ -67,6 +67,15 @@ public class Henry {
                 String by = taskDetails.substring(bySeparatorIndex + 5);
                 tasks[taskCount] = new Deadline(description, by);
                 taskCount = addTask(tasks, taskCount);
+            } else if (command.startsWith("event ")) {
+                String taskDetails = command.substring(6);
+                int fromSeparatorIndex = taskDetails.indexOf(" /from ");
+                int toSeparatorIndex = taskDetails.indexOf(" /to ", fromSeparatorIndex + 7);
+                String description = taskDetails.substring(0, fromSeparatorIndex);
+                String from = taskDetails.substring(fromSeparatorIndex + 7, toSeparatorIndex);
+                String to = taskDetails.substring(toSeparatorIndex + 5);
+                tasks[taskCount] = new Event(description, from, to);
+                taskCount = addTask(tasks, taskCount);
             } else {
                 tasks[taskCount] = new Todo(command);
                 taskCount = addTask(tasks, taskCount);
