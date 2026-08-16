@@ -103,3 +103,41 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+### UI-2: Recognize a command without arguments
+
+**Aim:** Verify that a bare command word is recognized and reported as missing information.
+
+| Step | Input |
+| --- | --- |
+| 1 | `todo` |
+| 2 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+The todo command needs more information.
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```

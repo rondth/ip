@@ -45,30 +45,35 @@ public class Henry {
                     for (int i = 0; i < taskCount; i++) {
                         System.out.println(" " + (i + 1) + "." + tasks[i]);
                     }
-                } else if (command.startsWith("mark ")) {
+                } else if (isCommand(command, "mark")) {
+                    requireArguments(command, "mark");
                     int taskNumber = Integer.parseInt(command.substring(5).trim());
                     int taskIndex = taskNumber - 1;
                     tasks[taskIndex].markAsDone();
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks[taskIndex]);
-                } else if (command.startsWith("unmark ")) {
+                } else if (isCommand(command, "unmark")) {
+                    requireArguments(command, "unmark");
                     int taskNumber = Integer.parseInt(command.substring(7).trim());
                     int taskIndex = taskNumber - 1;
                     tasks[taskIndex].markAsNotDone();
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks[taskIndex]);
-                } else if (command.startsWith("todo ")) {
+                } else if (isCommand(command, "todo")) {
+                    requireArguments(command, "todo");
                     String description = command.substring(5);
                     tasks[taskCount] = new Todo(description);
                     taskCount = addTask(tasks, taskCount);
-                } else if (command.startsWith("deadline ")) {
+                } else if (isCommand(command, "deadline")) {
+                    requireArguments(command, "deadline");
                     String taskDetails = command.substring(9);
                     int bySeparatorIndex = taskDetails.indexOf(" /by ");
                     String description = taskDetails.substring(0, bySeparatorIndex);
                     String by = taskDetails.substring(bySeparatorIndex + 5);
                     tasks[taskCount] = new Deadline(description, by);
                     taskCount = addTask(tasks, taskCount);
-                } else if (command.startsWith("event ")) {
+                } else if (isCommand(command, "event")) {
+                    requireArguments(command, "event");
                     String taskDetails = command.substring(6);
                     int fromSeparatorIndex = taskDetails.indexOf(" /from ");
                     int toSeparatorIndex = taskDetails.indexOf(" /to ", fromSeparatorIndex + 7);
@@ -85,6 +90,30 @@ public class Henry {
                 System.out.println(e.getMessage());
             }
             System.out.println(separator);
+        }
+    }
+
+    /**
+     * Returns whether the input is the given command, with or without arguments.
+     *
+     * @param input complete user input
+     * @param commandWord command word to match
+     * @return true if the input contains the command word
+     */
+    private static boolean isCommand(String input, String commandWord) {
+        return input.equals(commandWord) || input.startsWith(commandWord + " ");
+    }
+
+    /**
+     * Ensures that a command which requires arguments is not empty.
+     *
+     * @param input complete user input
+     * @param commandWord command word whose arguments are required
+     * @throws HenryException if the command has no arguments
+     */
+    private static void requireArguments(String input, String commandWord) throws HenryException {
+        if (input.equals(commandWord)) {
+            throw new HenryException("The " + commandWord + " command needs more information.");
         }
     }
 
