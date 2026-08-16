@@ -12,7 +12,7 @@ public class Henry {
      *
      * @param args command-line arguments; not used
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws HenryException {
         String separator = "____________________________________________________________";
         String banner = " _   _                      \n"
                 + "| | | | ___ _ __  _ __ _   _\n"
@@ -33,52 +33,56 @@ public class Henry {
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine();
-            if (command.equals("bye")) {
-                System.out.println("Bye. Hope to see you again soon!");
-                System.out.println(separator);
-                break;
-            }
-
-            if (command.equals("list")) {
-                System.out.println(" Here are the tasks in your list:");
-                for (int i = 0; i < taskCount; i++) {
-                    System.out.println(" " + (i + 1) + "." + tasks[i]);
+            try {
+                if (command.equals("bye")) {
+                    System.out.println("Bye. Hope to see you again soon!");
+                    System.out.println(separator);
+                    break;
                 }
-            } else if (command.startsWith("mark ")) {
-                int taskNumber = Integer.parseInt(command.substring(5).trim());
-                int taskIndex = taskNumber - 1;
-                tasks[taskIndex].markAsDone();
-                System.out.println(" Nice! I've marked this task as done:");
-                System.out.println("   " + tasks[taskIndex]);
-            } else if (command.startsWith("unmark ")) {
-                int taskNumber = Integer.parseInt(command.substring(7).trim());
-                int taskIndex = taskNumber - 1;
-                tasks[taskIndex].markAsNotDone();
-                System.out.println(" OK, I've marked this task as not done yet:");
-                System.out.println("   " + tasks[taskIndex]);
-            } else if (command.startsWith("todo ")) {
-                String description = command.substring(5);
-                tasks[taskCount] = new Todo(description);
-                taskCount = addTask(tasks, taskCount);
-            } else if (command.startsWith("deadline ")) {
-                String taskDetails = command.substring(9);
-                int bySeparatorIndex = taskDetails.indexOf(" /by ");
-                String description = taskDetails.substring(0, bySeparatorIndex);
-                String by = taskDetails.substring(bySeparatorIndex + 5);
-                tasks[taskCount] = new Deadline(description, by);
-                taskCount = addTask(tasks, taskCount);
-            } else if (command.startsWith("event ")) {
-                String taskDetails = command.substring(6);
-                int fromSeparatorIndex = taskDetails.indexOf(" /from ");
-                int toSeparatorIndex = taskDetails.indexOf(" /to ", fromSeparatorIndex + 7);
-                String description = taskDetails.substring(0, fromSeparatorIndex);
-                String from = taskDetails.substring(fromSeparatorIndex + 7, toSeparatorIndex);
-                String to = taskDetails.substring(toSeparatorIndex + 5);
-                tasks[taskCount] = new Event(description, from, to);
-                taskCount = addTask(tasks, taskCount);
-            } else {
-                tasks[taskCount] = new Todo(command);
-                taskCount = addTask(tasks, taskCount);
+
+                if (command.equals("list")) {
+                    System.out.println(" Here are the tasks in your list:");
+                    for (int i = 0; i < taskCount; i++) {
+                        System.out.println(" " + (i + 1) + "." + tasks[i]);
+                    }
+                } else if (command.startsWith("mark ")) {
+                    int taskNumber = Integer.parseInt(command.substring(5).trim());
+                    int taskIndex = taskNumber - 1;
+                    tasks[taskIndex].markAsDone();
+                    System.out.println(" Nice! I've marked this task as done:");
+                    System.out.println("   " + tasks[taskIndex]);
+                } else if (command.startsWith("unmark ")) {
+                    int taskNumber = Integer.parseInt(command.substring(7).trim());
+                    int taskIndex = taskNumber - 1;
+                    tasks[taskIndex].markAsNotDone();
+                    System.out.println(" OK, I've marked this task as not done yet:");
+                    System.out.println("   " + tasks[taskIndex]);
+                } else if (command.startsWith("todo ")) {
+                    String description = command.substring(5);
+                    tasks[taskCount] = new Todo(description);
+                    taskCount = addTask(tasks, taskCount);
+                } else if (command.startsWith("deadline ")) {
+                    String taskDetails = command.substring(9);
+                    int bySeparatorIndex = taskDetails.indexOf(" /by ");
+                    String description = taskDetails.substring(0, bySeparatorIndex);
+                    String by = taskDetails.substring(bySeparatorIndex + 5);
+                    tasks[taskCount] = new Deadline(description, by);
+                    taskCount = addTask(tasks, taskCount);
+                } else if (command.startsWith("event ")) {
+                    String taskDetails = command.substring(6);
+                    int fromSeparatorIndex = taskDetails.indexOf(" /from ");
+                    int toSeparatorIndex = taskDetails.indexOf(" /to ", fromSeparatorIndex + 7);
+                    String description = taskDetails.substring(0, fromSeparatorIndex);
+                    String from = taskDetails.substring(fromSeparatorIndex + 7, toSeparatorIndex);
+                    String to = taskDetails.substring(toSeparatorIndex + 5);
+                    tasks[taskCount] = new Event(description, from, to);
+                    taskCount = addTask(tasks, taskCount);
+                } else {
+                    throw new HenryException(
+                            "I don't recognise that command. Try todo, deadline, event, list, mark, unmark, or bye.");
+                }
+            } catch (HenryException e){
+                System.out.println(e.getMessage());
             }
             System.out.println(separator);
         }
