@@ -56,12 +56,30 @@ public class Henry {
                 tasks[taskIndex].markAsNotDone();
                 System.out.println(" OK, I've marked this task as not done yet:");
                 System.out.println("   " + tasks[taskIndex]);
+            } else if (command.startsWith("todo ")) {
+                String description = command.substring(5);
+                tasks[taskCount] = new Todo(description);
+                taskCount = addTask(tasks, taskCount);
             } else {
-                tasks[taskCount] = new Task(command);
-                taskCount++;
-                System.out.println("added: " + command);
+                tasks[taskCount] = new Todo(command);
+                taskCount = addTask(tasks, taskCount);
             }
             System.out.println(separator);
         }
+    }
+
+    /**
+     * Prints confirmation for the task at the current insertion position.
+     *
+     * @param tasks task storage containing the newly added task
+     * @param taskCount index of the newly added task
+     * @return the updated number of tasks
+     */
+    private static int addTask(Task[] tasks, int taskCount) {
+        int updatedTaskCount = taskCount + 1;
+        System.out.println(" Got it. I've added this task:");
+        System.out.println("   " + tasks[taskCount]);
+        System.out.println(" Now you have " + updatedTaskCount + " tasks in the list.");
+        return updatedTaskCount;
     }
 }
