@@ -1,13 +1,12 @@
+import java.util.ArrayList;
 import java.util.Scanner;
 
 /**
  * Starts the Henry chatbot application.
  */
 public class Henry {
-    private static final int MAX_TASKS = 100;
-
     /**
-     * Greets the user, stores tasks, updates task completion, lists saved tasks, and exits
+     * Greets the user, stores tasks, updates or deletes tasks, lists saved tasks, and exits
      * when the user enters bye.
      *
      * @param args command-line arguments; not used
@@ -28,8 +27,7 @@ public class Henry {
         System.out.println(separator);
 
         Scanner scanner = new Scanner(System.in);
-        Task[] tasks = new Task[MAX_TASKS];
-        int taskCount = 0;
+        ArrayList<Task> tasks = new ArrayList<>();
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
@@ -42,28 +40,32 @@ public class Henry {
 
                 if (command.equals("list")) {
                     System.out.println(" Here are the tasks in your list:");
-                    for (int i = 0; i < taskCount; i++) {
-                        System.out.println(" " + (i + 1) + "." + tasks[i]);
+                    for (int i = 0; i < tasks.size(); i++) {
+                        System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
                 } else if (isCommand(command, "mark")) {
-                    int taskIndex = parseTaskIndex(command, "mark", taskCount);
-                    tasks[taskIndex].markAsDone();
+                    int taskIndex = parseTaskIndex(command, "mark", tasks.size());
+                    tasks.get(taskIndex).markAsDone();
                     System.out.println(" Nice! I've marked this task as done:");
-                    System.out.println("   " + tasks[taskIndex]);
+                    System.out.println("   " + tasks.get(taskIndex));
                 } else if (isCommand(command, "unmark")) {
-                    int taskIndex = parseTaskIndex(command, "unmark", taskCount);
-                    tasks[taskIndex].markAsNotDone();
+                    int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
+                    tasks.get(taskIndex).markAsNotDone();
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks[taskIndex]);
+                    System.out.println("   " + tasks.get(taskIndex));
+                } else if (isCommand(command, "delete")) {
+                    int taskIndex = parseTaskIndex(command, "delete", tasks.size());
+                    Task removedTask = tasks.remove(taskIndex);
+                    System.out.println(" Noted. I've removed this task:");
+                    System.out.println("   " + removedTask);
+                    System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
                 } else if (isCommand(command, "todo")) {
                     String description = command.substring("todo".length()).trim();
                     if (description.isEmpty()) {
                         throw new HenryException(
                                 "A todo needs a description. For example: todo borrow a book");
                     }
-                    ensureTaskListHasSpace(taskCount);
-                    tasks[taskCount] = new Todo(description);
-                    taskCount = addTask(tasks, taskCount);
+                    addTask(tasks, new Todo(description));
                 } else if (isCommand(command, "deadline")) {
                     String taskDetails = command.substring("deadline".length()).trim();
                     int bySeparatorIndex = taskDetails.indexOf("/by");
@@ -79,9 +81,7 @@ public class Henry {
                     if (by.isEmpty()) {
                         throw new HenryException("A deadline needs a date or time after '/by'.");
                     }
-                    ensureTaskListHasSpace(taskCount);
-                    tasks[taskCount] = new Deadline(description, by);
-                    taskCount = addTask(tasks, taskCount);
+                    addTask(tasks, new Deadline(description, by));
                 } else if (isCommand(command, "event")) {
                     String taskDetails = command.substring("event".length()).trim();
                     int fromSeparatorIndex = taskDetails.indexOf("/from");
@@ -106,12 +106,10 @@ public class Henry {
                     if (to.isEmpty()) {
                         throw new HenryException("An event needs an ending time after '/to'.");
                     }
-                    ensureTaskListHasSpace(taskCount);
-                    tasks[taskCount] = new Event(description, from, to);
-                    taskCount = addTask(tasks, taskCount);
+                    addTask(tasks, new Event(description, from, to));
                 } else {
                     throw new HenryException(
-                            "I don't recognise that command. Try todo, deadline, event, list, mark, unmark, or bye.");
+                            "I don't recognise that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
                 }
             } catch (HenryException e) {
                 System.out.println(e.getMessage());
@@ -167,29 +165,15 @@ public class Henry {
     }
 
     /**
-     * Ensures that another task can be stored in the fixed-size task list.
+     * Adds a task to the list and prints its confirmation.
      *
-     * @param taskCount current number of tasks
-     * @throws HenryException if the task list is full
+     * @param tasks task list to update
+     * @param task task to add
      */
-    private static void ensureTaskListHasSpace(int taskCount) throws HenryException {
-        if (taskCount >= MAX_TASKS) {
-            throw new HenryException("The task list is full, so I can't add another task.");
-        }
-    }
-
-    /**
-     * Prints confirmation for the task at the current insertion position.
-     *
-     * @param tasks task storage containing the newly added task
-     * @param taskCount index of the newly added task
-     * @return the updated number of tasks
-     */
-    private static int addTask(Task[] tasks, int taskCount) {
-        int updatedTaskCount = taskCount + 1;
+    private static void addTask(ArrayList<Task> tasks, Task task) {
+        tasks.add(task);
         System.out.println(" Got it. I've added this task:");
-        System.out.println("   " + tasks[taskCount]);
-        System.out.println(" Now you have " + updatedTaskCount + " tasks in the list.");
-        return updatedTaskCount;
+        System.out.println("   " + task);
+        System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
     }
 }
