@@ -60,6 +60,13 @@ public class Henry {
                 String description = command.substring(5);
                 tasks[taskCount] = new Todo(description);
                 taskCount = addTask(tasks, taskCount);
+            } else if (command.startsWith("deadline ")) {
+                String taskDetails = command.substring(9);
+                int bySeparatorIndex = taskDetails.indexOf(" /by ");
+                String description = taskDetails.substring(0, bySeparatorIndex);
+                String by = taskDetails.substring(bySeparatorIndex + 5);
+                tasks[taskCount] = new Deadline(description, by);
+                taskCount = addTask(tasks, taskCount);
             } else {
                 tasks[taskCount] = new Todo(command);
                 taskCount = addTask(tasks, taskCount);

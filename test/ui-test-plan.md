@@ -99,3 +99,52 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+### UI-2: Add and list a deadline
+
+**Aim:** Verify that a deadline accepts free-form date text and retains its type-specific formatting when listed.
+
+| Step | Input |
+| --- | --- |
+| 1 | `deadline do homework /by no idea :-p` |
+| 2 | `list` |
+| 3 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+ Got it. I've added this task:
+   [D][ ] do homework (by: no idea :-p)
+ Now you have 1 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] do homework (by: no idea :-p)
+____________________________________________________________
+```
+
+#### Expected output after step 3
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
