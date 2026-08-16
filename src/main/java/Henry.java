@@ -31,73 +31,79 @@ public class Henry {
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
+            CommandType commandType = CommandType.from(command);
             try {
-                if (command.equals("bye")) {
+                switch (commandType) {
+                case BYE:
                     System.out.println("Bye. Hope to see you again soon!");
                     System.out.println(separator);
-                    break;
-                }
-
-                if (command.equals("list")) {
+                    return;
+                case LIST:
                     System.out.println(" Here are the tasks in your list:");
                     for (int i = 0; i < tasks.size(); i++) {
                         System.out.println(" " + (i + 1) + "." + tasks.get(i));
                     }
-                } else if (isCommand(command, "mark")) {
-                    int taskIndex = parseTaskIndex(command, "mark", tasks.size());
+                    break;
+                case MARK:
+                    int taskIndex = parseTaskIndex(command, commandType, tasks.size());
                     tasks.get(taskIndex).markAsDone();
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(taskIndex));
-                } else if (isCommand(command, "unmark")) {
-                    int taskIndex = parseTaskIndex(command, "unmark", tasks.size());
-                    tasks.get(taskIndex).markAsNotDone();
+                    break;
+                case UNMARK:
+                    int unmarkedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
+                    tasks.get(unmarkedTaskIndex).markAsNotDone();
                     System.out.println(" OK, I've marked this task as not done yet:");
-                    System.out.println("   " + tasks.get(taskIndex));
-                } else if (isCommand(command, "delete")) {
-                    int taskIndex = parseTaskIndex(command, "delete", tasks.size());
-                    Task removedTask = tasks.remove(taskIndex);
+                    System.out.println("   " + tasks.get(unmarkedTaskIndex));
+                    break;
+                case DELETE:
+                    int deletedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
+                    Task removedTask = tasks.remove(deletedTaskIndex);
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + removedTask);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
-                } else if (isCommand(command, "todo")) {
-                    String description = command.substring("todo".length()).trim();
+                    break;
+                case TODO:
+                    String description = extractArguments(command, commandType);
                     if (description.isEmpty()) {
                         throw new HenryException(
                                 "A todo needs a description. For example: todo borrow a book");
                     }
                     addTask(tasks, new Todo(description));
-                } else if (isCommand(command, "deadline")) {
-                    String taskDetails = command.substring("deadline".length()).trim();
+                    break;
+                case DEADLINE:
+                    String taskDetails = extractArguments(command, commandType);
                     int bySeparatorIndex = taskDetails.indexOf("/by");
                     if (bySeparatorIndex < 0) {
                         throw new HenryException(
                                 "A deadline needs '/by'. For example: deadline submit report /by Friday");
                     }
-                    String description = taskDetails.substring(0, bySeparatorIndex).trim();
+                    String deadlineDescription = taskDetails.substring(0, bySeparatorIndex).trim();
                     String by = taskDetails.substring(bySeparatorIndex + 3).trim();
-                    if (description.isEmpty()) {
+                    if (deadlineDescription.isEmpty()) {
                         throw new HenryException("A deadline needs a description before '/by'.");
                     }
                     if (by.isEmpty()) {
                         throw new HenryException("A deadline needs a date or time after '/by'.");
                     }
-                    addTask(tasks, new Deadline(description, by));
-                } else if (isCommand(command, "event")) {
-                    String taskDetails = command.substring("event".length()).trim();
-                    int fromSeparatorIndex = taskDetails.indexOf("/from");
+                    addTask(tasks, new Deadline(deadlineDescription, by));
+                    break;
+                case EVENT:
+                    String eventDetails = extractArguments(command, commandType);
+                    int fromSeparatorIndex = eventDetails.indexOf("/from");
                     if (fromSeparatorIndex < 0) {
                         throw new HenryException(
                                 "An event needs '/from' and '/to'. "
                                         + "For example: event meeting /from 2pm /to 3pm");
                     }
-                    int toSeparatorIndex = taskDetails.indexOf("/to", fromSeparatorIndex + 5);
+                    int toSeparatorIndex = eventDetails.indexOf("/to", fromSeparatorIndex + 5);
                     if (toSeparatorIndex < 0) {
                         throw new HenryException("An event needs an ending time introduced by '/to'.");
                     }
-                    String description = taskDetails.substring(0, fromSeparatorIndex).trim();
-                    String from = taskDetails.substring(fromSeparatorIndex + 5, toSeparatorIndex).trim();
-                    String to = taskDetails.substring(toSeparatorIndex + 3).trim();
-                    if (description.isEmpty()) {
+                    String eventDescription = eventDetails.substring(0, fromSeparatorIndex).trim();
+                    String from = eventDetails.substring(fromSeparatorIndex + 5, toSeparatorIndex).trim();
+                    String to = eventDetails.substring(toSeparatorIndex + 3).trim();
+                    if (eventDescription.isEmpty()) {
                         throw new HenryException("An event needs a description before '/from'.");
                     }
                     if (from.isEmpty()) {
@@ -106,8 +112,9 @@ public class Henry {
                     if (to.isEmpty()) {
                         throw new HenryException("An event needs an ending time after '/to'.");
                     }
-                    addTask(tasks, new Event(description, from, to));
-                } else {
+                    addTask(tasks, new Event(eventDescription, from, to));
+                    break;
+                case UNKNOWN:
                     throw new HenryException(
                             "I don't recognise that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
                 }
@@ -119,28 +126,18 @@ public class Henry {
     }
 
     /**
-     * Returns whether the input is the given command, with or without arguments.
-     *
-     * @param input complete user input
-     * @param commandWord command word to match
-     * @return true if the input contains the command word
-     */
-    private static boolean isCommand(String input, String commandWord) {
-        return input.equals(commandWord) || input.startsWith(commandWord + " ");
-    }
-
-    /**
      * Extracts and validates the task number supplied to a command.
      *
      * @param input complete user input
-     * @param commandWord command whose task number should be read
+     * @param commandType command whose task number should be read
      * @param taskCount current number of tasks
      * @return zero-based index of the selected task
      * @throws HenryException if the task number is absent, invalid, or out of range
      */
-    private static int parseTaskIndex(String input, String commandWord, int taskCount)
+    private static int parseTaskIndex(String input, CommandType commandType, int taskCount)
             throws HenryException {
-        String argument = input.substring(commandWord.length()).trim();
+        String commandWord = commandType.getCommandWord();
+        String argument = extractArguments(input, commandType);
         if (argument.isEmpty()) {
             throw new HenryException(
                     "Please specify a task number. For example: " + commandWord + " 1");
@@ -162,6 +159,17 @@ public class Henry {
                             + taskCount + ".");
         }
         return taskNumber - 1;
+    }
+
+    /**
+     * Returns the text following a command word.
+     *
+     * @param input complete user input
+     * @param commandType recognised command type
+     * @return trimmed command arguments
+     */
+    private static String extractArguments(String input, CommandType commandType) {
+        return input.substring(commandType.getCommandWord().length()).trim();
     }
 
     /**
