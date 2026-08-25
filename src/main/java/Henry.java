@@ -1,6 +1,5 @@
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.ArrayList;
 
 /*
 Starts the Henry chatbot application.
@@ -17,7 +16,7 @@ public class Henry {
         Ui ui = new Ui();
         ui.showWelcome();
         Storage storage = new Storage(Path.of("data", "henry.txt"));
-        ArrayList<Task> tasks = loadTasks(storage, ui);
+        TaskList tasks = loadTasks(storage, ui);
 
         while (ui.hasNextCommand()) {
             String command = ui.readCommand();
@@ -28,7 +27,7 @@ public class Henry {
                     ui.showGoodbye();
                     return;
                 case LIST:
-                    ui.showTaskList(tasks);
+                    ui.showTaskList(tasks.asList());
                     break;
                 case MARK:
                     int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
@@ -44,9 +43,9 @@ public class Henry {
                 case DELETE:
                     int deletedTaskIndex = Parser.parseTaskIndex(
                             command, commandType, tasks.size());
-                    Task removedTask = tasks.remove(deletedTaskIndex);
+                    Task removedTask = tasks.delete(deletedTaskIndex);
                     try {
-                        storage.save(tasks);
+                        storage.save(tasks.asList());
                     } catch (IOException e) {
                         tasks.add(deletedTaskIndex, removedTask);
                         throw e;
@@ -82,13 +81,13 @@ public class Henry {
      * @param ui console UI used to display the confirmation
      * @throws IOException if the updated task list cannot be saved
      */
-    private static void addTask(ArrayList<Task> tasks, Task task, Storage storage, Ui ui)
+    private static void addTask(TaskList tasks, Task task, Storage storage, Ui ui)
             throws IOException {
         tasks.add(task);
         try {
-            storage.save(tasks);
+            storage.save(tasks.asList());
         } catch (IOException e) {
-            tasks.removeLast();
+            tasks.delete(tasks.size() - 1);
             throw e;
         }
         ui.showTaskAdded(task, tasks.size());
@@ -102,7 +101,7 @@ public class Henry {
      * @param ui console UI used to display loading warnings
      * @return loaded tasks, or an empty list when loading fails
      */
-    private static ArrayList<Task> loadTasks(Storage storage, Ui ui) {
+    private static TaskList loadTasks(Storage storage, Ui ui) {
         try {
             Storage.LoadResult result = storage.load();
             if (result.skippedLineCount() > 0) {
@@ -111,34 +110,34 @@ public class Henry {
                 ui.showMessage("Warning: " + skippedLineCount + " malformed task "
                         + recordLabel + " skipped while loading data/henry.txt.");
             }
-            return result.tasks();
+            return new TaskList(result.tasks());
         } catch (IOException e) {
             ui.showMessage("I couldn't load tasks from data/henry.txt. "
                     + "Starting with an empty task list.");
-            return new ArrayList<>();
+            return new TaskList();
         }
     }
 
     /**
      * Changes a task's status and restores it if the updated list cannot be saved.
      */
-    private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone,
+    private static void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone,
             Storage storage) throws IOException {
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone;
         if (isDone) {
-            task.markAsDone();
+            tasks.mark(taskIndex);
         } else {
-            task.markAsNotDone();
+            tasks.unmark(taskIndex);
         }
 
         try {
-            storage.save(tasks);
+            storage.save(tasks.asList());
         } catch (IOException e) {
             if (wasDone) {
-                task.markAsDone();
+                tasks.mark(taskIndex);
             } else {
-                task.markAsNotDone();
+                tasks.unmark(taskIndex);
             }
             throw e;
         }
