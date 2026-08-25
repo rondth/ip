@@ -6,7 +6,6 @@ import java.util.Scanner;
 /**
  * Starts the Henry chatbot application.
  */
-@SuppressWarnings("ExplicitToImplicitClassMigration")
 public class Henry {
     /**
      * Greets the user, stores tasks, updates or deletes tasks, lists saved tasks, and exits
@@ -14,15 +13,17 @@ public class Henry {
      *
      * @param args command-line arguments; not used
      */
-    @SuppressWarnings({"unused", "StringConcatenationToTextBlock"})
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         String separator = "____________________________________________________________";
-        String banner = " _   _                      \n"
-                + "| | | | ___ _ __  _ __ _   _\n"
-                + "| |_| |/ _ \\ '_ \\| '__| | | |\n"
-                + "|  _  |  __/ | | | |  | |_| |\n"
-                + "|_| |_|\\___|_| |_|_|   \\__, |\n"
-                + "                       |___/ \n";
+        String banner = """
+                 _   _                     \s
+                | | | | ___ _ __  _ __ _   _
+                | |_| |/ _ \\ '_ \\| '__| | | |
+                |  _  |  __/ | | | |  | |_| |
+                |_| |_|\\___|_| |_|_|   \\__, |
+                                       |___/\s
+                """;
 
         System.out.println(separator);
         System.out.print(banner);
