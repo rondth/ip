@@ -44,7 +44,7 @@ public class Task {
      * @return completion status and description separated by {@code " | "}
      */
     protected String toFileString() {
-        return (isDone ? "1" : "0") + " | " + description;
+        return (isDone ? "1" : "0") + " | " + Storage.escapeField(description);
     }
 
     /**

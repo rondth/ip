@@ -2,6 +2,8 @@
 
 This file is the source of truth for `$test-ui`. Run each case in a fresh program process and stop the full test session at the first failure.
 Unless a case provides initial data-file contents, ensure `data/henry.txt` does not exist before starting its process.
+When a case specifies that `data/henry.txt` is a directory, create an empty directory at that path
+instead of a file.
 
 ## Test case template
 
@@ -706,4 +708,155 @@ ____________________________________________________________
 ```text
 Bye. Hope to see you again soon!
 ____________________________________________________________
+```
+
+### UI-8: Recover valid tasks from malformed data
+
+**Aim:** Verify that blank lines are ignored, malformed records are reported and skipped, and valid
+records—including escaped pipes and backslashes—are still loaded.
+
+#### Initial `data/henry.txt`
+
+```text
+T | 1 | compare A \| B
+
+X | 0 | unknown task
+D | 2 | invalid status | Friday
+E | 0 | missing end time | 2pm
+T | 0 | unexpected | extra field
+D | 0 | use C:\\temp | Friday \| evening
+```
+
+| Step | Input |
+| --- | --- |
+| 1 | `list` |
+| 2 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+Warning: 4 malformed task records were skipped while loading data/henry.txt.
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+ Here are the tasks in your list:
+ 1.[T][X] compare A | B
+ 2.[D][ ] use C:\temp (by: Friday | evening)
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### UI-9: Continue safely when storage is unusable
+
+**Aim:** Verify that a read failure does not terminate Henry and a write failure rolls back the
+in-memory task addition. Before startup, create an empty directory named `data/henry.txt`.
+
+| Step | Input |
+| --- | --- |
+| 1 | `todo task that cannot be saved` |
+| 2 | `list` |
+| 3 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+I couldn't load tasks from data/henry.txt. Starting with an empty task list.
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+I couldn't save your tasks. Your last change was not applied.
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+ Here are the tasks in your list:
+____________________________________________________________
+```
+
+#### Expected output after step 3
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+### UI-10: Escape storage separators in user text
+
+**Aim:** Verify that pipes and backslashes in task text are saved without being confused with file
+format separators.
+
+| Step | Input |
+| --- | --- |
+| 1 | `todo compare A | B \ C` |
+| 2 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+ Got it. I've added this task:
+   [T][ ] compare A | B \ C
+ Now you have 1 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+#### Expected `data/henry.txt` after step 2
+
+```text
+T | 0 | compare A \| B \\ C
 ```

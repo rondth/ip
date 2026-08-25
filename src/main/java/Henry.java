@@ -6,6 +6,7 @@ import java.util.Scanner;
 /**
  * Starts the Henry chatbot application.
  */
+@SuppressWarnings("ExplicitToImplicitClassMigration")
 public class Henry {
     /**
      * Greets the user, stores tasks, updates or deletes tasks, lists saved tasks, and exits
@@ -13,7 +14,8 @@ public class Henry {
      *
      * @param args command-line arguments; not used
      */
-    public static void main(String[] args) throws IOException {
+    @SuppressWarnings({"unused", "StringConcatenationToTextBlock"})
+    public static void main(String[] args) {
         String separator = "____________________________________________________________";
         String banner = " _   _                      \n"
                 + "| | | | ___ _ __  _ __ _   _\n"
@@ -30,7 +32,7 @@ public class Henry {
 
         Scanner scanner = new Scanner(System.in);
         Storage storage = new Storage(Path.of("data", "henry.txt"));
-        ArrayList<Task> tasks = storage.load();
+        ArrayList<Task> tasks = loadTasks(storage, separator);
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
@@ -49,22 +51,25 @@ public class Henry {
                     break;
                 case MARK:
                     int taskIndex = parseTaskIndex(command, commandType, tasks.size());
-                    tasks.get(taskIndex).markAsDone();
-                    storage.save(tasks);
+                    updateTaskStatus(tasks, taskIndex, true, storage);
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(taskIndex));
                     break;
                 case UNMARK:
                     int unmarkedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
-                    tasks.get(unmarkedTaskIndex).markAsNotDone();
-                    storage.save(tasks);
+                    updateTaskStatus(tasks, unmarkedTaskIndex, false, storage);
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks.get(unmarkedTaskIndex));
                     break;
                 case DELETE:
                     int deletedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
                     Task removedTask = tasks.remove(deletedTaskIndex);
-                    storage.save(tasks);
+                    try {
+                        storage.save(tasks);
+                    } catch (IOException e) {
+                        tasks.add(deletedTaskIndex, removedTask);
+                        throw e;
+                    }
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + removedTask);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -126,6 +131,8 @@ public class Henry {
                 }
             } catch (HenryException e) {
                 System.out.println(e.getMessage());
+            } catch (IOException e) {
+                System.out.println("I couldn't save your tasks. Your last change was not applied.");
             }
             System.out.println(separator);
         }
@@ -189,9 +196,62 @@ public class Henry {
     private static void addTask(ArrayList<Task> tasks, Task task, Storage storage)
             throws IOException {
         tasks.add(task);
-        storage.save(tasks);
+        try {
+            storage.save(tasks);
+        } catch (IOException e) {
+            tasks.removeLast();
+            throw e;
+        }
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+    }
+
+    /**
+     * Loads tasks without allowing a missing, unreadable, or partially malformed file to crash
+     * the chatbot.
+     */
+    private static ArrayList<Task> loadTasks(Storage storage, String separator) {
+        try {
+            Storage.LoadResult result = storage.load();
+            if (result.skippedLineCount() > 0) {
+                int skippedLineCount = result.skippedLineCount();
+                String recordLabel = skippedLineCount == 1 ? "record was" : "records were";
+                System.out.println("Warning: " + skippedLineCount + " malformed task "
+                        + recordLabel + " skipped while loading data/henry.txt.");
+                System.out.println(separator);
+            }
+            return result.tasks();
+        } catch (IOException e) {
+            System.out.println("I couldn't load tasks from data/henry.txt. "
+                    + "Starting with an empty task list.");
+            System.out.println(separator);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Changes a task's status and restores it if the updated list cannot be saved.
+     */
+    private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone,
+            Storage storage) throws IOException {
+        Task task = tasks.get(taskIndex);
+        boolean wasDone = task.isDone;
+        if (isDone) {
+            task.markAsDone();
+        } else {
+            task.markAsNotDone();
+        }
+
+        try {
+            storage.save(tasks);
+        } catch (IOException e) {
+            if (wasDone) {
+                task.markAsDone();
+            } else {
+                task.markAsNotDone();
+            }
+            throw e;
+        }
     }
 }

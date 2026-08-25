@@ -20,7 +20,8 @@ public class Event extends Task {
 
     @Override
     protected String toFileString() {
-        return "E | " + super.toFileString() + " | " + from + " | " + to;
+        return "E | " + super.toFileString() + " | " + Storage.escapeField(from)
+                + " | " + Storage.escapeField(to);
     }
 
     @Override

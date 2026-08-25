@@ -17,7 +17,7 @@ public class Deadline extends Task {
 
     @Override
     protected String toFileString() {
-        return "D | " + super.toFileString() + " | " + by;
+        return "D | " + super.toFileString() + " | " + Storage.escapeField(by);
     }
 
     @Override
