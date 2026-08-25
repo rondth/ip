@@ -13,8 +13,14 @@ src/main/resources/docs/
 *.iml
 bin/
 
+# Runtime task data
+/data/
+
 # Codex Skills
-.codex/
+.codex/*
+!.codex/skills/
+.codex/skills/*
+!.codex/skills/keep-code-simple/
 
 # Temp files
 _temp/

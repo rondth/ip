@@ -1,8 +1,10 @@
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Starts the Henry chatbot application.
+/*
+Starts the Henry chatbot application.
  */
 public class Henry {
     /**
@@ -11,14 +13,17 @@ public class Henry {
      *
      * @param args command-line arguments; not used
      */
+    @SuppressWarnings("unused")
     public static void main(String[] args) {
         String separator = "____________________________________________________________";
-        String banner = " _   _                      \n"
-                + "| | | | ___ _ __  _ __ _   _\n"
-                + "| |_| |/ _ \\ '_ \\| '__| | | |\n"
-                + "|  _  |  __/ | | | |  | |_| |\n"
-                + "|_| |_|\\___|_| |_|_|   \\__, |\n"
-                + "                       |___/ \n";
+        String banner = """
+                 _   _                     \s
+                | | | | ___ _ __  _ __ _   _
+                | |_| |/ _ \\ '_ \\| '__| | | |
+                |  _  |  __/ | | | |  | |_| |
+                |_| |_|\\___|_| |_|_|   \\__, |
+                                       |___/\s
+                """;
 
         System.out.println(separator);
         System.out.print(banner);
@@ -27,7 +32,8 @@ public class Henry {
         System.out.println(separator);
 
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage(Path.of("data", "henry.txt"));
+        ArrayList<Task> tasks = loadTasks(storage, separator);
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
@@ -46,19 +52,25 @@ public class Henry {
                     break;
                 case MARK:
                     int taskIndex = parseTaskIndex(command, commandType, tasks.size());
-                    tasks.get(taskIndex).markAsDone();
+                    updateTaskStatus(tasks, taskIndex, true, storage);
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(taskIndex));
                     break;
                 case UNMARK:
                     int unmarkedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
-                    tasks.get(unmarkedTaskIndex).markAsNotDone();
+                    updateTaskStatus(tasks, unmarkedTaskIndex, false, storage);
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks.get(unmarkedTaskIndex));
                     break;
                 case DELETE:
                     int deletedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
                     Task removedTask = tasks.remove(deletedTaskIndex);
+                    try {
+                        storage.save(tasks);
+                    } catch (IOException e) {
+                        tasks.add(deletedTaskIndex, removedTask);
+                        throw e;
+                    }
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + removedTask);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -69,7 +81,7 @@ public class Henry {
                         throw new HenryException(
                                 "A todo needs a description. For example: todo borrow a book");
                     }
-                    addTask(tasks, new Todo(description));
+                    addTask(tasks, new Todo(description), storage);
                     break;
                 case DEADLINE:
                     String taskDetails = extractArguments(command, commandType);
@@ -86,7 +98,7 @@ public class Henry {
                     if (by.isEmpty()) {
                         throw new HenryException("A deadline needs a date or time after '/by'.");
                     }
-                    addTask(tasks, new Deadline(deadlineDescription, by));
+                    addTask(tasks, new Deadline(deadlineDescription, by), storage);
                     break;
                 case EVENT:
                     String eventDetails = extractArguments(command, commandType);
@@ -112,7 +124,7 @@ public class Henry {
                     if (to.isEmpty()) {
                         throw new HenryException("An event needs an ending time after '/to'.");
                     }
-                    addTask(tasks, new Event(eventDescription, from, to));
+                    addTask(tasks, new Event(eventDescription, from, to), storage);
                     break;
                 case UNKNOWN:
                     throw new HenryException(
@@ -120,6 +132,8 @@ public class Henry {
                 }
             } catch (HenryException e) {
                 System.out.println(e.getMessage());
+            } catch (IOException e) {
+                System.out.println("I couldn't save your tasks. Your last change was not applied.");
             }
             System.out.println(separator);
         }
@@ -177,11 +191,68 @@ public class Henry {
      *
      * @param tasks task list to update
      * @param task task to add
+     * @param storage storage used to save the updated list
+     * @throws IOException if the updated task list cannot be saved
      */
-    private static void addTask(ArrayList<Task> tasks, Task task) {
+    private static void addTask(ArrayList<Task> tasks, Task task, Storage storage)
+            throws IOException {
         tasks.add(task);
+        try {
+            storage.save(tasks);
+        } catch (IOException e) {
+            tasks.removeLast();
+            throw e;
+        }
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
+    }
+
+    /**
+     * Loads tasks without allowing a missing, unreadable, or partially malformed file to crash
+     * the chatbot.
+     */
+    private static ArrayList<Task> loadTasks(Storage storage, String separator) {
+        try {
+            Storage.LoadResult result = storage.load();
+            if (result.skippedLineCount() > 0) {
+                int skippedLineCount = result.skippedLineCount();
+                String recordLabel = skippedLineCount == 1 ? "record was" : "records were";
+                System.out.println("Warning: " + skippedLineCount + " malformed task "
+                        + recordLabel + " skipped while loading data/henry.txt.");
+                System.out.println(separator);
+            }
+            return result.tasks();
+        } catch (IOException e) {
+            System.out.println("I couldn't load tasks from data/henry.txt. "
+                    + "Starting with an empty task list.");
+            System.out.println(separator);
+            return new ArrayList<>();
+        }
+    }
+
+    /**
+     * Changes a task's status and restores it if the updated list cannot be saved.
+     */
+    private static void updateTaskStatus(ArrayList<Task> tasks, int taskIndex, boolean isDone,
+            Storage storage) throws IOException {
+        Task task = tasks.get(taskIndex);
+        boolean wasDone = task.isDone;
+        if (isDone) {
+            task.markAsDone();
+        } else {
+            task.markAsNotDone();
+        }
+
+        try {
+            storage.save(tasks);
+        } catch (IOException e) {
+            if (wasDone) {
+                task.markAsDone();
+            } else {
+                task.markAsNotDone();
+            }
+            throw e;
+        }
     }
 }

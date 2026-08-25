@@ -39,6 +39,15 @@ public class Task {
     }
 
     /**
+     * Returns the task fields shared by every task type in the storage format.
+     *
+     * @return completion status and description separated by {@code " | "}
+     */
+    protected String toFileString() {
+        return (isDone ? "1" : "0") + " | " + Storage.escapeField(description);
+    }
+
+    /**
      * Returns the task in its display format.
      *
      * @return the status icon followed by the task description
