@@ -1,6 +1,7 @@
 # Console UI Test Plan
 
 This file is the source of truth for `$test-ui`. Run each case in a fresh program process and stop the full test session at the first failure.
+Unless a case provides initial data-file contents, ensure `data/henry.txt` does not exist before starting its process.
 
 ## Test case template
 
@@ -481,7 +482,8 @@ ____________________________________________________________
 
 ### UI-6: Delete and renumber tasks
 
-**Aim:** Verify delete validation, removal confirmation, task-count updates, and list renumbering after deletion.
+**Aim:** Verify delete validation, removal confirmation, task-count updates, list renumbering after deletion,
+and the final file representation after add, mark, and delete operations.
 
 | Step | Input |
 | --- | --- |
@@ -642,6 +644,64 @@ ____________________________________________________________
 ```
 
 #### Expected output after step 16
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+#### Expected `data/henry.txt` after step 16
+
+```text
+T | 1 | read book
+D | 1 | return book | June 6th
+T | 1 | join sports club
+T | 0 | borrow book
+```
+
+### UI-7: Load saved tasks on startup
+
+**Aim:** Verify that todos, deadlines, and events, including their completion states, are restored from disk.
+
+#### Initial `data/henry.txt`
+
+```text
+T | 1 | read book
+D | 0 | return book | June 6th
+E | 1 | project meeting | Aug 6th 2pm | 4pm
+```
+
+| Step | Input |
+| --- | --- |
+| 1 | `list` |
+| 2 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+ Here are the tasks in your list:
+ 1.[T][X] read book
+ 2.[D][ ] return book (by: June 6th)
+ 3.[E][X] project meeting (from: Aug 6th 2pm to: 4pm)
+____________________________________________________________
+```
+
+#### Expected output after step 2
 
 ```text
 Bye. Hope to see you again soon!

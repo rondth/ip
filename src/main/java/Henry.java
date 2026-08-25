@@ -1,3 +1,5 @@
+import java.io.IOException;
+import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -11,7 +13,7 @@ public class Henry {
      *
      * @param args command-line arguments; not used
      */
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
         String separator = "____________________________________________________________";
         String banner = " _   _                      \n"
                 + "| | | | ___ _ __  _ __ _   _\n"
@@ -27,7 +29,8 @@ public class Henry {
         System.out.println(separator);
 
         Scanner scanner = new Scanner(System.in);
-        ArrayList<Task> tasks = new ArrayList<>();
+        Storage storage = new Storage(Path.of("data", "henry.txt"));
+        ArrayList<Task> tasks = storage.load();
 
         while (scanner.hasNextLine()) {
             String command = scanner.nextLine().trim();
@@ -47,18 +50,21 @@ public class Henry {
                 case MARK:
                     int taskIndex = parseTaskIndex(command, commandType, tasks.size());
                     tasks.get(taskIndex).markAsDone();
+                    storage.save(tasks);
                     System.out.println(" Nice! I've marked this task as done:");
                     System.out.println("   " + tasks.get(taskIndex));
                     break;
                 case UNMARK:
                     int unmarkedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
                     tasks.get(unmarkedTaskIndex).markAsNotDone();
+                    storage.save(tasks);
                     System.out.println(" OK, I've marked this task as not done yet:");
                     System.out.println("   " + tasks.get(unmarkedTaskIndex));
                     break;
                 case DELETE:
                     int deletedTaskIndex = parseTaskIndex(command, commandType, tasks.size());
                     Task removedTask = tasks.remove(deletedTaskIndex);
+                    storage.save(tasks);
                     System.out.println(" Noted. I've removed this task:");
                     System.out.println("   " + removedTask);
                     System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
@@ -69,7 +75,7 @@ public class Henry {
                         throw new HenryException(
                                 "A todo needs a description. For example: todo borrow a book");
                     }
-                    addTask(tasks, new Todo(description));
+                    addTask(tasks, new Todo(description), storage);
                     break;
                 case DEADLINE:
                     String taskDetails = extractArguments(command, commandType);
@@ -86,7 +92,7 @@ public class Henry {
                     if (by.isEmpty()) {
                         throw new HenryException("A deadline needs a date or time after '/by'.");
                     }
-                    addTask(tasks, new Deadline(deadlineDescription, by));
+                    addTask(tasks, new Deadline(deadlineDescription, by), storage);
                     break;
                 case EVENT:
                     String eventDetails = extractArguments(command, commandType);
@@ -112,7 +118,7 @@ public class Henry {
                     if (to.isEmpty()) {
                         throw new HenryException("An event needs an ending time after '/to'.");
                     }
-                    addTask(tasks, new Event(eventDescription, from, to));
+                    addTask(tasks, new Event(eventDescription, from, to), storage);
                     break;
                 case UNKNOWN:
                     throw new HenryException(
@@ -177,9 +183,13 @@ public class Henry {
      *
      * @param tasks task list to update
      * @param task task to add
+     * @param storage storage used to save the updated list
+     * @throws IOException if the updated task list cannot be saved
      */
-    private static void addTask(ArrayList<Task> tasks, Task task) {
+    private static void addTask(ArrayList<Task> tasks, Task task, Storage storage)
+            throws IOException {
         tasks.add(task);
+        storage.save(tasks);
         System.out.println(" Got it. I've added this task:");
         System.out.println("   " + task);
         System.out.println(" Now you have " + tasks.size() + " tasks in the list.");
