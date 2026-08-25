@@ -43,7 +43,7 @@ Use `<empty input>` when the user presses Enter without typing any characters. U
 | Step | Input |
 | --- | --- |
 | 1 | `todo borrow book` |
-| 2 | `deadline do homework /by no idea :-p` |
+| 2 | `deadline do homework /by 2/12/2019 1800` |
 | 3 | `event project meeting /from Mon 2pm /to 4pm` |
 | 4 | `list` |
 | 5 | `bye` |
@@ -76,7 +76,7 @@ ____________________________________________________________
 
 ```text
  Got it. I've added this task:
-   [D][ ] do homework (by: no idea :-p)
+   [D][ ] do homework (by: Dec 2 2019 6:00 PM)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ```
@@ -95,7 +95,7 @@ ____________________________________________________________
 ```text
  Here are the tasks in your list:
  1.[T][ ] borrow book
- 2.[D][ ] do homework (by: no idea :-p)
+ 2.[D][ ] do homework (by: Dec 2 2019 6:00 PM)
  3.[E][ ] project meeting (from: Mon 2pm to: 4pm)
 ____________________________________________________________
 ```
@@ -149,7 +149,7 @@ ____________________________________________________________
 #### Expected output after step 2
 
 ```text
-A deadline needs '/by'. For example: deadline submit report /by Friday
+A deadline needs '/by'. For example: deadline submit report /by 2019-12-02
 ____________________________________________________________
 ```
 
@@ -320,7 +320,7 @@ ____________________________________________________________
 | Step | Input |
 | --- | --- |
 | 1 | `todo read book` |
-| 2 | `deadline submit report /by Friday` |
+| 2 | `deadline submit report /by 2019-12-02` |
 | 3 | `mark 2` |
 | 4 | `deadline missing date /by` |
 | 5 | `unmark 3` |
@@ -357,7 +357,7 @@ ____________________________________________________________
 
 ```text
  Got it. I've added this task:
-   [D][ ] submit report (by: Friday)
+   [D][ ] submit report (by: Dec 2 2019 12:00 AM)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ```
@@ -366,7 +366,7 @@ ____________________________________________________________
 
 ```text
  Nice! I've marked this task as done:
-   [D][X] submit report (by: Friday)
+   [D][X] submit report (by: Dec 2 2019 12:00 AM)
 ____________________________________________________________
 ```
 
@@ -389,7 +389,7 @@ ____________________________________________________________
 ```text
  Here are the tasks in your list:
  1.[T][ ] read book
- 2.[D][X] submit report (by: Friday)
+ 2.[D][X] submit report (by: Dec 2 2019 12:00 AM)
 ____________________________________________________________
 ```
 
@@ -397,7 +397,7 @@ ____________________________________________________________
 
 ```text
  OK, I've marked this task as not done yet:
-   [D][ ] submit report (by: Friday)
+   [D][ ] submit report (by: Dec 2 2019 12:00 AM)
 ____________________________________________________________
 ```
 
@@ -406,7 +406,7 @@ ____________________________________________________________
 ```text
  Here are the tasks in your list:
  1.[T][ ] read book
- 2.[D][ ] submit report (by: Friday)
+ 2.[D][ ] submit report (by: Dec 2 2019 12:00 AM)
 ____________________________________________________________
 ```
 
@@ -493,7 +493,7 @@ and the final file representation after add, mark, and delete operations.
 | 2 | `delete first` |
 | 3 | `delete 1` |
 | 4 | `todo read book` |
-| 5 | `deadline return book /by June 6th` |
+| 5 | `deadline return book /by 2019-06-06` |
 | 6 | `event project meeting /from Aug 6th 2pm /to 4pm` |
 | 7 | `todo join sports club` |
 | 8 | `todo borrow book` |
@@ -555,7 +555,7 @@ ____________________________________________________________
 
 ```text
  Got it. I've added this task:
-   [D][ ] return book (by: June 6th)
+   [D][ ] return book (by: Jun 6 2019 12:00 AM)
  Now you have 2 tasks in the list.
 ____________________________________________________________
 ```
@@ -599,7 +599,7 @@ ____________________________________________________________
 
 ```text
  Nice! I've marked this task as done:
-   [D][X] return book (by: June 6th)
+   [D][X] return book (by: Jun 6 2019 12:00 AM)
 ____________________________________________________________
 ```
 
@@ -625,7 +625,7 @@ ____________________________________________________________
 ```text
  Here are the tasks in your list:
  1.[T][X] read book
- 2.[D][X] return book (by: June 6th)
+ 2.[D][X] return book (by: Jun 6 2019 12:00 AM)
  3.[T][X] join sports club
  4.[T][ ] borrow book
 ____________________________________________________________
@@ -656,7 +656,7 @@ ____________________________________________________________
 
 ```text
 T | 1 | read book
-D | 1 | return book | June 6th
+D | 1 | return book | 2019-06-06T00:00
 T | 1 | join sports club
 T | 0 | borrow book
 ```
@@ -669,7 +669,7 @@ T | 0 | borrow book
 
 ```text
 T | 1 | read book
-D | 0 | return book | June 6th
+D | 0 | return book | 2019-06-06T00:00
 E | 1 | project meeting | Aug 6th 2pm | 4pm
 ```
 
@@ -698,7 +698,7 @@ ____________________________________________________________
 ```text
  Here are the tasks in your list:
  1.[T][X] read book
- 2.[D][ ] return book (by: June 6th)
+ 2.[D][ ] return book (by: Jun 6 2019 12:00 AM)
  3.[E][X] project meeting (from: Aug 6th 2pm to: 4pm)
 ____________________________________________________________
 ```
@@ -724,7 +724,7 @@ X | 0 | unknown task
 D | 2 | invalid status | Friday
 E | 0 | missing end time | 2pm
 T | 0 | unexpected | extra field
-D | 0 | use C:\\temp | Friday \| evening
+D | 0 | use C:\\temp | 2019-12-02T18:00
 ```
 
 | Step | Input |
@@ -754,7 +754,7 @@ ____________________________________________________________
 ```text
  Here are the tasks in your list:
  1.[T][X] compare A | B
- 2.[D][ ] use C:\temp (by: Friday | evening)
+ 2.[D][ ] use C:\temp (by: Dec 2 2019 6:00 PM)
 ____________________________________________________________
 ```
 
@@ -859,4 +859,67 @@ ____________________________________________________________
 
 ```text
 T | 0 | compare A \| B \\ C
+```
+
+### UI-11: Parse and validate deadline dates
+
+**Aim:** Verify that deadlines are stored as dates and times, displayed in a friendly format, and reject invalid dates.
+
+| Step | Input |
+| --- | --- |
+| 1 | `deadline return book /by 2/12/2019 1800` |
+| 2 | `deadline impossible date /by 2019-02-29` |
+| 3 | `list` |
+| 4 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+ Got it. I've added this task:
+   [D][ ] return book (by: Dec 2 2019 6:00 PM)
+ Now you have 1 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+Please use a deadline date like 2/12/2019 1800 or 2019-12-02.
+____________________________________________________________
+```
+
+#### Expected output after step 3
+
+```text
+ Here are the tasks in your list:
+ 1.[D][ ] return book (by: Dec 2 2019 6:00 PM)
+____________________________________________________________
+```
+
+#### Expected output after step 4
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+#### Expected `data/henry.txt` after step 4
+
+```text
+D | 0 | return book | 2019-12-02T18:00
 ```

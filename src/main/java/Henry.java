@@ -1,5 +1,7 @@
 import java.io.IOException;
 import java.nio.file.Path;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -88,7 +90,7 @@ public class Henry {
                     int bySeparatorIndex = taskDetails.indexOf("/by");
                     if (bySeparatorIndex < 0) {
                         throw new HenryException(
-                                "A deadline needs '/by'. For example: deadline submit report /by Friday");
+                                "A deadline needs '/by'. For example: deadline submit report /by 2019-12-02");
                     }
                     String deadlineDescription = taskDetails.substring(0, bySeparatorIndex).trim();
                     String by = taskDetails.substring(bySeparatorIndex + 3).trim();
@@ -98,7 +100,14 @@ public class Henry {
                     if (by.isEmpty()) {
                         throw new HenryException("A deadline needs a date or time after '/by'.");
                     }
-                    addTask(tasks, new Deadline(deadlineDescription, by), storage);
+                    LocalDateTime deadlineDateTime;
+                    try {
+                        deadlineDateTime = Deadline.parseBy(by);
+                    } catch (DateTimeParseException e) {
+                        throw new HenryException(
+                                "Please use a deadline date like 2/12/2019 1800 or 2019-12-02.");
+                    }
+                    addTask(tasks, new Deadline(deadlineDescription, deadlineDateTime), storage);
                     break;
                 case EVENT:
                     String eventDetails = extractArguments(command, commandType);

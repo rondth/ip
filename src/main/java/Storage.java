@@ -4,6 +4,8 @@ import java.nio.file.AtomicMoveNotSupportedException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.StandardCopyOption;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -124,7 +126,7 @@ public class Storage {
         }
         case "D" -> {
             requireFieldCount(fields, 4, taskType);
-            yield new Deadline(description, requireText(fields.get(3), "deadline"));
+            yield new Deadline(description, parseDeadline(requireText(fields.get(3), "deadline")));
         }
         case "E" -> {
             requireFieldCount(fields, 5, taskType);
@@ -138,6 +140,21 @@ public class Storage {
             task.markAsDone();
         }
         return task;
+    }
+
+    /**
+     * Parses the ISO-8601 date-time representation written by {@link Deadline}.
+     *
+     * @param deadline stored deadline value
+     * @return parsed deadline value
+     * @throws IllegalArgumentException if the stored value is not a valid date-time
+     */
+    private LocalDateTime parseDeadline(String deadline) {
+        try {
+            return LocalDateTime.parse(deadline);
+        } catch (DateTimeParseException e) {
+            throw new IllegalArgumentException("Invalid deadline", e);
+        }
     }
 
     /**
