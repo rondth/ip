@@ -1,5 +1,9 @@
+package henry.ui;
+
 import java.util.List;
 import java.util.Scanner;
+
+import henry.task.Task;
 
 /**
  * Handles console input and output for Henry.

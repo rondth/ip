@@ -1,5 +1,15 @@
+package henry;
+
 import java.io.IOException;
 import java.nio.file.Path;
+
+import henry.exception.HenryException;
+import henry.parser.CommandType;
+import henry.parser.Parser;
+import henry.storage.Storage;
+import henry.task.Task;
+import henry.task.TaskList;
+import henry.ui.Ui;
 
 /*
 Starts the Henry chatbot application.
@@ -124,7 +134,7 @@ public class Henry {
     private static void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone,
             Storage storage) throws IOException {
         Task task = tasks.get(taskIndex);
-        boolean wasDone = task.isDone;
+        boolean wasDone = task.isDone();
         if (isDone) {
             tasks.mark(taskIndex);
         } else {

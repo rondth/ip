@@ -1,3 +1,5 @@
+package henry.task;
+
 /**
  * Represents a task and whether it has been completed.
  */
@@ -25,6 +27,15 @@ public class Task {
     }
 
     /**
+     * Returns whether this task has been completed.
+     *
+     * @return true if this task is done
+     */
+    public boolean isDone() {
+        return isDone;
+    }
+
+    /**
      * Marks this task as completed.
      */
     public void markAsDone() {
@@ -43,8 +54,18 @@ public class Task {
      *
      * @return completion status and description separated by {@code " | "}
      */
-    protected String toFileString() {
-        return (isDone ? "1" : "0") + " | " + Storage.escapeField(description);
+    public String toFileString() {
+        return (isDone ? "1" : "0") + " | " + escapeField(description);
+    }
+
+    /**
+     * Escapes characters that otherwise have structural meaning in the storage format.
+     *
+     * @param field task text to store
+     * @return field text safe for the pipe-separated file
+     */
+    protected static String escapeField(String field) {
+        return field.replace("\\", "\\\\").replace("|", "\\|");
     }
 
     /**
