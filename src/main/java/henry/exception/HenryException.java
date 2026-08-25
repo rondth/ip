@@ -1,3 +1,5 @@
+package henry.exception;
+
 /**
  * Represents an error caused by an invalid command given to Henry.
  */

@@ -1,3 +1,5 @@
+package henry.task;
+
 /**
  * Represents a task that takes place between specified start and end times.
  */
@@ -19,9 +21,9 @@ public class Event extends Task {
     }
 
     @Override
-    protected String toFileString() {
-        return "E | " + super.toFileString() + " | " + Storage.escapeField(from)
-                + " | " + Storage.escapeField(to);
+    public String toFileString() {
+        return "E | " + super.toFileString() + " | " + escapeField(from)
+                + " | " + escapeField(to);
     }
 
     @Override

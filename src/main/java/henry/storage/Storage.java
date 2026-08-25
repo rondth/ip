@@ -1,3 +1,5 @@
+package henry.storage;
+
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.AtomicMoveNotSupportedException;
@@ -8,6 +10,11 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeParseException;
 import java.util.ArrayList;
 import java.util.List;
+
+import henry.task.Deadline;
+import henry.task.Event;
+import henry.task.Task;
+import henry.task.Todo;
 
 /**
  * Loads and saves Henry's tasks using a text file on the hard disk.
@@ -87,16 +94,6 @@ public class Storage {
             // This is normally already moved. If replacement failed, avoid leaving clutter behind.
             Files.deleteIfExists(temporaryFile);
         }
-    }
-
-    /**
-     * Escapes characters that otherwise have structural meaning in the storage format.
-     *
-     * @param field user-entered text to store
-     * @return field text safe for the pipe-separated file
-     */
-    static String escapeField(String field) {
-        return field.replace("\\", "\\\\").replace("|", "\\|");
     }
 
     /**

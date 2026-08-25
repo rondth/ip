@@ -1,3 +1,5 @@
+package henry.parser;
+
 /**
  * Represents a command that Henry can recognise.
  */
