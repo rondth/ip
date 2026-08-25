@@ -68,7 +68,7 @@ public class Storage {
      * @throws IOException if the directory or file cannot be written
      */
     public void save(List<Task> tasks) throws IOException {
-        Path targetFile = filePath.toAbsolutePath();
+        Path targetFile = filePath;
         Path parentDirectory = targetFile.getParent();
         Files.createDirectories(parentDirectory);
 

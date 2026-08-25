@@ -3,8 +3,8 @@ import java.nio.file.Path;
 import java.util.ArrayList;
 import java.util.Scanner;
 
-/**
- * Starts the Henry chatbot application.
+/*
+Starts the Henry chatbot application.
  */
 public class Henry {
     /**
