@@ -24,3 +24,21 @@ Prerequisites: JDK 25, update Intellij to the most recent version.
    ```
 
 **Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+
+## Creating and running a fat JAR
+
+A fat JAR contains Henry's compiled classes together with its runtime dependencies, so it can be run without separately adding those dependencies to the classpath.
+
+From the project root, create the fat JAR with:
+
+```shell
+./gradlew shadowJar
+```
+
+On Windows, use `gradlew.bat shadowJar` instead. The generated JAR is located at `build/libs/henry.jar`.
+
+Run it from the project root with Java 25:
+
+```shell
+java -jar build/libs/henry.jar
+```
