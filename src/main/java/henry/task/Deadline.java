@@ -15,26 +15,26 @@ public class Deadline extends Task {
             DateTimeFormatter.ofPattern("d/M/uuuu HHmm").withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter OUTPUT_FORMATTER =
             DateTimeFormatter.ofPattern("MMM d uuuu h:mm a", Locale.US);
-    protected LocalDateTime by;
+    protected LocalDateTime deadline;
 
     /**
      * Creates a deadline task that is initially not done.
      *
-     * @param description description of the task
-     * @param by date and time by which the task should be completed
+     * @param description description of the task.
+     * @param deadline date and time by which the task should be completed.
      */
-    public Deadline(String description, LocalDateTime by) {
+    public Deadline(String description, LocalDateTime deadline) {
         super(description);
-        this.by = by;
+        this.deadline = deadline;
     }
 
     /**
      * Parses a deadline entered as either {@code d/M/yyyy HHmm} or {@code yyyy-MM-dd}.
      * A date without a time is stored at the start of that date.
      *
-     * @param input user-entered deadline date and optional time
-     * @return parsed deadline
-     * @throws DateTimeParseException if the input is not a supported date format
+     * @param input user-entered deadline date and optional time.
+     * @return parsed deadline.
+     * @throws DateTimeParseException if the input is not a supported date format.
      */
     public static LocalDateTime parseBy(String input) throws DateTimeParseException {
         try {
@@ -46,11 +46,12 @@ public class Deadline extends Task {
 
     @Override
     public String toFileString() {
-        return "D | " + super.toFileString() + " | " + by;
+        return "D | " + super.toFileString() + " | " + deadline;
     }
 
     @Override
     public String toString() {
-        return "[D]" + super.toString() + " (by: " + by.format(OUTPUT_FORMATTER) + ")";
+        return "[D]" + super.toString()
+                + " (by: " + deadline.format(OUTPUT_FORMATTER) + ")";
     }
 }

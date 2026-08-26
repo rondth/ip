@@ -16,8 +16,8 @@ public class Parser {
     /**
      * Identifies the command represented by the given input.
      *
-     * @param input complete user input
-     * @return matching command type, or {@link CommandType#UNKNOWN} when none matches
+     * @param input complete user input.
+     * @return matching command type, or {@link CommandType#UNKNOWN} when none matches.
      */
     public static CommandType parseCommandType(String input) {
         return CommandType.from(input);
@@ -26,11 +26,11 @@ public class Parser {
     /**
      * Extracts and validates the task number supplied to a command.
      *
-     * @param input complete user input
-     * @param commandType command whose task number should be read
-     * @param taskCount current number of tasks
-     * @return zero-based index of the selected task
-     * @throws HenryException if the task number is absent, invalid, or out of range
+     * @param input complete user input.
+     * @param commandType command whose task number should be read.
+     * @param taskCount current number of tasks.
+     * @return zero-based index of the selected task.
+     * @throws HenryException if the task number is absent, invalid, or out of range.
      */
     public static int parseTaskIndex(String input, CommandType commandType, int taskCount)
             throws HenryException {
@@ -62,17 +62,17 @@ public class Parser {
     /**
      * Parses a task-creation command into its corresponding task.
      *
-     * @param input complete user input
-     * @param commandType task command to parse
-     * @return parsed task
-     * @throws HenryException if required task details are missing or invalid
+     * @param input complete user input.
+     * @param commandType task command to parse.
+     * @return parsed task.
+     * @throws HenryException if required task details are missing or invalid.
      */
     public static Task parseTask(String input, CommandType commandType) throws HenryException {
         return switch (commandType) {
-        case TODO -> parseTodo(input);
-        case DEADLINE -> parseDeadline(input);
-        case EVENT -> parseEvent(input);
-        default -> throw new IllegalArgumentException("Not a task command: " + commandType);
+            case TODO -> parseTodo(input);
+            case DEADLINE -> parseDeadline(input);
+            case EVENT -> parseEvent(input);
+            default -> throw new IllegalArgumentException("Not a task command: " + commandType);
         };
     }
 

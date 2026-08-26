@@ -28,6 +28,12 @@ Unless the user says otherwise, assume that you are assisting a student working 
 
 Before starting any task involving code, read and apply `.codex/skills/keep-code-simple/SKILL.md`.
 
+## Java coding standard
+
+Before creating, reviewing, or modifying any Java source or test code, read and apply
+`.codex/skills/seedu-java-coding-standard/SKILL.md`. All Java code in this project must follow
+that skill.
+
 ## Java version:
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
@@ -50,6 +56,9 @@ After every update to application code:
 3. If a UI test fails, stop as required by `$test-ui` and report the failure. Do not claim the code update is complete until the failure is resolved or clearly handed back to the user.
 
 ## Git
+
+Before naming or creating a branch, or proposing, reviewing, or creating a commit, read and apply
+`.codex/skills/seedu-git-standard/SKILL.md`. All branch names and commits must follow that skill.
 
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.

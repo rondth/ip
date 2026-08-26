@@ -26,8 +26,8 @@ public class Storage {
     /**
      * Contains the usable tasks and the number of malformed records found during loading.
      *
-     * @param tasks valid tasks recovered from the data file
-     * @param skippedLineCount number of malformed non-empty records
+     * @param tasks valid tasks recovered from the data file.
+     * @param skippedLineCount number of malformed non-empty records.
      */
     public record LoadResult(ArrayList<Task> tasks, int skippedLineCount) {
     }
@@ -35,7 +35,7 @@ public class Storage {
     /**
      * Creates storage that writes to the given file.
      *
-     * @param filePath location of the task data file
+     * @param filePath location of the task data file.
      */
     public Storage(Path filePath) {
         this.filePath = filePath;
@@ -47,8 +47,8 @@ public class Storage {
      * Malformed non-empty lines are skipped so that one damaged record does not prevent valid
      * tasks from being recovered.
      *
-     * @return loaded tasks and the number of records that could not be parsed
-     * @throws IOException if the data file cannot be read
+     * @return loaded tasks and the number of records that could not be parsed.
+     * @throws IOException if the data file cannot be read.
      */
     public LoadResult load() throws IOException {
         ArrayList<Task> tasks = new ArrayList<>();
@@ -73,8 +73,8 @@ public class Storage {
     /**
      * Rewrites the data file with the current task list, creating its directory if needed.
      *
-     * @param tasks tasks to save
-     * @throws IOException if the directory or file cannot be written
+     * @param tasks tasks to save.
+     * @throws IOException if the directory or file cannot be written.
      */
     public void save(List<Task> tasks) throws IOException {
         Path targetFile = filePath;
@@ -99,8 +99,8 @@ public class Storage {
     /**
      * Reconstructs one task from its pipe-separated storage representation.
      *
-     * @param taskLine stored representation of one task
-     * @return reconstructed task
+     * @param taskLine stored representation of one task.
+     * @return reconstructed task.
      */
     private Task parseTask(String taskLine) {
         List<String> fields = splitFields(taskLine);
@@ -117,20 +117,21 @@ public class Storage {
         String description = requireText(fields.get(2), "description");
 
         Task task = switch (taskType) {
-        case "T" -> {
-            requireFieldCount(fields, 3, taskType);
-            yield new Todo(description);
-        }
-        case "D" -> {
-            requireFieldCount(fields, 4, taskType);
-            yield new Deadline(description, parseDeadline(requireText(fields.get(3), "deadline")));
-        }
-        case "E" -> {
-            requireFieldCount(fields, 5, taskType);
-            yield new Event(description, requireText(fields.get(3), "start time"),
-                    requireText(fields.get(4), "end time"));
-        }
-        default -> throw new IllegalArgumentException("Unknown task type: " + taskType);
+            case "T" -> {
+                requireFieldCount(fields, 3, taskType);
+                yield new Todo(description);
+            }
+            case "D" -> {
+                requireFieldCount(fields, 4, taskType);
+                yield new Deadline(
+                        description, parseDeadline(requireText(fields.get(3), "deadline")));
+            }
+            case "E" -> {
+                requireFieldCount(fields, 5, taskType);
+                yield new Event(description, requireText(fields.get(3), "start time"),
+                        requireText(fields.get(4), "end time"));
+            }
+            default -> throw new IllegalArgumentException("Unknown task type: " + taskType);
         };
 
         if (isDone) {
@@ -142,9 +143,9 @@ public class Storage {
     /**
      * Parses the ISO-8601 date-time representation written by {@link Deadline}.
      *
-     * @param deadline stored deadline value
-     * @return parsed deadline value
-     * @throws IllegalArgumentException if the stored value is not a valid date-time
+     * @param deadline stored deadline value.
+     * @return parsed deadline value.
+     * @throws IllegalArgumentException if the stored value is not a valid date-time.
      */
     private LocalDateTime parseDeadline(String deadline) {
         try {
@@ -157,10 +158,10 @@ public class Storage {
     /**
      * Checks that a stored task has the required number of fields.
      *
-     * @param fields decoded task fields
-     * @param expectedCount required number of fields
-     * @param taskType stored one-letter task type used in the error message
-     * @throws IllegalArgumentException if the field count is incorrect
+     * @param fields decoded task fields.
+     * @param expectedCount required number of fields.
+     * @param taskType stored one-letter task type used in the error message.
+     * @throws IllegalArgumentException if the field count is incorrect.
      */
     private void requireFieldCount(List<String> fields, int expectedCount, String taskType) {
         if (fields.size() != expectedCount) {
@@ -171,8 +172,8 @@ public class Storage {
     /**
      * Splits a stored record and decodes escaped pipes and backslashes in one pass.
      *
-     * @param taskLine complete stored task record
-     * @return decoded fields from the record
+     * @param taskLine complete stored task record.
+     * @return decoded fields from the record.
      */
     private List<String> splitFields(String taskLine) {
         ArrayList<String> fields = new ArrayList<>();
@@ -199,10 +200,10 @@ public class Storage {
     /**
      * Rejects empty values that cannot be created through Henry's command interface.
      *
-     * @param field decoded field text
-     * @param fieldName name used if validation fails
-     * @return the validated field
-     * @throws IllegalArgumentException if the field contains no non-whitespace text
+     * @param field decoded field text.
+     * @param fieldName name used if validation fails.
+     * @return the validated field.
+     * @throws IllegalArgumentException if the field contains no non-whitespace text.
      */
     private String requireText(String field, String fieldName) {
         if (field.isBlank()) {
@@ -214,9 +215,9 @@ public class Storage {
     /**
      * Atomically replaces the old data where supported, with a portable fallback.
      *
-     * @param temporaryFile completely written replacement file
-     * @param targetFile configured data-file location
-     * @throws IOException if neither replacement method succeeds
+     * @param temporaryFile completely written replacement file.
+     * @param targetFile configured data-file location.
+     * @throws IOException if neither replacement method succeeds.
      */
     private void replaceDataFile(Path temporaryFile, Path targetFile) throws IOException {
         try {

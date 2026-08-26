@@ -19,7 +19,7 @@ public class Henry {
      * Greets the user, stores tasks, updates or deletes tasks, lists saved tasks, and exits
      * when the user enters bye.
      *
-     * @param args command-line arguments; not used
+     * @param args command-line arguments; not used.
      */
     @SuppressWarnings("unused")
     public static void main(String[] args) {
@@ -33,43 +33,43 @@ public class Henry {
             CommandType commandType = Parser.parseCommandType(command);
             try {
                 switch (commandType) {
-                case BYE:
-                    ui.showGoodbye();
-                    return;
-                case LIST:
-                    ui.showTaskList(tasks.asList());
-                    break;
-                case MARK:
-                    int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
-                    updateTaskStatus(tasks, taskIndex, true, storage);
-                    ui.showTaskMarked(tasks.get(taskIndex));
-                    break;
-                case UNMARK:
-                    int unmarkedTaskIndex = Parser.parseTaskIndex(
-                            command, commandType, tasks.size());
-                    updateTaskStatus(tasks, unmarkedTaskIndex, false, storage);
-                    ui.showTaskUnmarked(tasks.get(unmarkedTaskIndex));
-                    break;
-                case DELETE:
-                    int deletedTaskIndex = Parser.parseTaskIndex(
-                            command, commandType, tasks.size());
-                    Task removedTask = tasks.delete(deletedTaskIndex);
-                    try {
-                        storage.save(tasks.asList());
-                    } catch (IOException e) {
-                        tasks.add(deletedTaskIndex, removedTask);
-                        throw e;
-                    }
-                    ui.showTaskDeleted(removedTask, tasks.size());
-                    break;
-                case TODO:
-                case DEADLINE:
-                case EVENT:
-                    addTask(tasks, Parser.parseTask(command, commandType), storage, ui);
-                    break;
-                case UNKNOWN:
-                    throw new HenryException(
-                            "I don't recognise that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.");
+                    case BYE:
+                        ui.showGoodbye();
+                        return;
+                    case LIST:
+                        ui.showTaskList(tasks.asList());
+                        break;
+                    case MARK:
+                        int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
+                        updateTaskStatus(tasks, taskIndex, true, storage);
+                        ui.showTaskMarked(tasks.get(taskIndex));
+                        break;
+                    case UNMARK:
+                        int unmarkedTaskIndex = Parser.parseTaskIndex(
+                                command, commandType, tasks.size());
+                        updateTaskStatus(tasks, unmarkedTaskIndex, false, storage);
+                        ui.showTaskUnmarked(tasks.get(unmarkedTaskIndex));
+                        break;
+                    case DELETE:
+                        int deletedTaskIndex = Parser.parseTaskIndex(
+                                command, commandType, tasks.size());
+                        Task removedTask = tasks.delete(deletedTaskIndex);
+                        try {
+                            storage.save(tasks.asList());
+                        } catch (IOException e) {
+                            tasks.add(deletedTaskIndex, removedTask);
+                            throw e;
+                        }
+                        ui.showTaskDeleted(removedTask, tasks.size());
+                        break;
+                    case TODO:
+                    case DEADLINE:
+                    case EVENT:
+                        addTask(tasks, Parser.parseTask(command, commandType), storage, ui);
+                        break;
+                    case UNKNOWN:
+                        throw new HenryException("I don't recognise that command. Try todo, "
+                                + "deadline, event, list, mark, unmark, delete, or bye.");
                 }
             } catch (HenryException e) {
                 ui.showMessage(e.getMessage());
@@ -85,11 +85,11 @@ public class Henry {
     /**
      * Adds a task to the list and prints its confirmation.
      *
-     * @param tasks task list to update
-     * @param task task to add
-     * @param storage storage used to save the updated list
-     * @param ui console UI used to display the confirmation
-     * @throws IOException if the updated task list cannot be saved
+     * @param tasks task list to update.
+     * @param task task to add.
+     * @param storage storage used to save the updated list.
+     * @param ui console UI used to display the confirmation.
+     * @throws IOException if the updated task list cannot be saved.
      */
     private static void addTask(TaskList tasks, Task task, Storage storage, Ui ui)
             throws IOException {
@@ -107,9 +107,9 @@ public class Henry {
      * Loads tasks without allowing a missing, unreadable, or partially malformed file to crash
      * the chatbot.
      *
-     * @param storage storage used to load tasks
-     * @param ui console UI used to display loading warnings
-     * @return loaded tasks, or an empty list when loading fails
+     * @param storage storage used to load tasks.
+     * @param ui console UI used to display loading warnings.
+     * @return loaded tasks, or an empty list when loading fails.
      */
     private static TaskList loadTasks(Storage storage, Ui ui) {
         try {

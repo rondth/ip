@@ -20,7 +20,7 @@ public class TaskList {
     /**
      * Creates a task list containing tasks loaded from storage.
      *
-     * @param tasks initial tasks
+     * @param tasks initial tasks.
      */
     public TaskList(List<Task> tasks) {
         this.tasks = new ArrayList<>(tasks);
@@ -29,7 +29,7 @@ public class TaskList {
     /**
      * Returns a read-only view of the tasks for display and storage.
      *
-     * @return current tasks
+     * @return current tasks.
      */
     public List<Task> asList() {
         return Collections.unmodifiableList(tasks);
@@ -38,8 +38,8 @@ public class TaskList {
     /**
      * Returns the task at the given zero-based index.
      *
-     * @param index task index
-     * @return selected task
+     * @param index task index.
+     * @return selected task.
      */
     public Task get(int index) {
         return tasks.get(index);
@@ -48,7 +48,7 @@ public class TaskList {
     /**
      * Returns the number of tasks in the list.
      *
-     * @return task count
+     * @return task count.
      */
     public int size() {
         return tasks.size();
@@ -57,7 +57,7 @@ public class TaskList {
     /**
      * Adds a task to the end of the list.
      *
-     * @param task task to add
+     * @param task task to add.
      */
     public void add(Task task) {
         tasks.add(task);
@@ -66,8 +66,8 @@ public class TaskList {
     /**
      * Inserts a task at a specific position.
      *
-     * @param index insertion index
-     * @param task task to insert
+     * @param index insertion index.
+     * @param task task to insert.
      */
     public void add(int index, Task task) {
         tasks.add(index, task);
@@ -76,8 +76,8 @@ public class TaskList {
     /**
      * Deletes and returns the task at the given index.
      *
-     * @param index task index
-     * @return deleted task
+     * @param index task index.
+     * @return deleted task.
      */
     public Task delete(int index) {
         return tasks.remove(index);
@@ -86,7 +86,7 @@ public class TaskList {
     /**
      * Marks the selected task as done.
      *
-     * @param index task index
+     * @param index task index.
      */
     public void mark(int index) {
         tasks.get(index).markAsDone();
@@ -95,7 +95,7 @@ public class TaskList {
     /**
      * Marks the selected task as not done.
      *
-     * @param index task index
+     * @param index task index.
      */
     public void unmark(int index) {
         tasks.get(index).markAsNotDone();
