@@ -43,7 +43,7 @@ public class Ui {
     /**
      * Returns whether another command is available from the user.
      *
-     * @return true when another line can be read
+     * @return true when another line can be read.
      */
     public boolean hasNextCommand() {
         return scanner.hasNextLine();
@@ -52,7 +52,7 @@ public class Ui {
     /**
      * Reads and trims the next user command.
      *
-     * @return next command entered by the user
+     * @return next command entered by the user.
      */
     public String readCommand() {
         return scanner.nextLine().trim();
@@ -61,7 +61,7 @@ public class Ui {
     /**
      * Displays the current task list.
      *
-     * @param tasks tasks to display
+     * @param tasks tasks to display.
      */
     public void showTaskList(List<Task> tasks) {
         System.out.println(" Here are the tasks in your list:");
@@ -73,8 +73,8 @@ public class Ui {
     /**
      * Displays confirmation that a task was added.
      *
-     * @param task added task
-     * @param taskCount number of tasks after the addition
+     * @param task added task.
+     * @param taskCount number of tasks after the addition.
      */
     public void showTaskAdded(Task task, int taskCount) {
         System.out.println(" Got it. I've added this task:");
@@ -85,7 +85,7 @@ public class Ui {
     /**
      * Displays confirmation that a task was marked as done.
      *
-     * @param task updated task
+     * @param task updated task.
      */
     public void showTaskMarked(Task task) {
         System.out.println(" Nice! I've marked this task as done:");
@@ -95,7 +95,7 @@ public class Ui {
     /**
      * Displays confirmation that a task was marked as not done.
      *
-     * @param task updated task
+     * @param task updated task.
      */
     public void showTaskUnmarked(Task task) {
         System.out.println(" OK, I've marked this task as not done yet:");
@@ -105,8 +105,8 @@ public class Ui {
     /**
      * Displays confirmation that a task was deleted.
      *
-     * @param task deleted task
-     * @param taskCount number of tasks after the deletion
+     * @param task deleted task.
+     * @param taskCount number of tasks after the deletion.
      */
     public void showTaskDeleted(Task task, int taskCount) {
         System.out.println(" Noted. I've removed this task:");
@@ -117,7 +117,7 @@ public class Ui {
     /**
      * Displays a message followed by the standard response separator.
      *
-     * @param message message to display
+     * @param message message to display.
      */
     public void showMessage(String message) {
         System.out.println(message);
