@@ -60,6 +60,22 @@ public class Parser {
     }
 
     /**
+     * Extracts the keyword supplied to a find command.
+     *
+     * @param input complete user input
+     * @return keyword to search for
+     * @throws HenryException if no keyword was supplied
+     */
+    public static String parseKeyword(String input) throws HenryException {
+        String keyword = extractArguments(input, CommandType.FIND);
+        if (keyword.isEmpty()) {
+            throw new HenryException(
+                    "Please specify a keyword. For example: find book");
+        }
+        return keyword;
+    }
+
+    /**
      * Parses a task-creation command into its corresponding task.
      *
      * @param input complete user input.

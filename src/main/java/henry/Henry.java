@@ -39,6 +39,10 @@ public class Henry {
                     case LIST:
                         ui.showTaskList(tasks.asList());
                         break;
+                    case FIND:
+                        String keyword = Parser.parseKeyword(command);
+                        ui.showMatchingTasks(tasks.find(keyword));
+                        break;
                     case MARK:
                         int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
                         updateTaskStatus(tasks, taskIndex, true, storage);
@@ -69,7 +73,7 @@ public class Henry {
                         break;
                     case UNKNOWN:
                         throw new HenryException("I don't recognise that command. Try todo, "
-                                + "deadline, event, list, mark, unmark, delete, or bye.");
+                                + "deadline, event, list, find, mark, unmark, delete, or bye.");
                 }
             } catch (HenryException e) {
                 ui.showMessage(e.getMessage());

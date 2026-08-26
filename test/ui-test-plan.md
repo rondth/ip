@@ -456,14 +456,14 @@ ____________________________________________________________
 #### Expected output after step 2
 
 ```text
-I don't recognise that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
+I don't recognise that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
 ____________________________________________________________
 ```
 
 #### Expected output after step 3
 
 ```text
-I don't recognise that command. Try todo, deadline, event, list, mark, unmark, delete, or bye.
+I don't recognise that command. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
 ____________________________________________________________
 ```
 
@@ -922,4 +922,109 @@ ____________________________________________________________
 
 ```text
 D | 0 | return book | 2019-12-02T18:00
+```
+
+### UI-12: Find tasks by description keyword
+
+**Aim:** Verify that find displays only tasks whose descriptions contain the keyword, preserves
+their original order, handles no matches, and rejects a missing keyword.
+
+| Step | Input |
+| --- | --- |
+| 1 | `todo read book` |
+| 2 | `deadline return book /by 2019-06-06` |
+| 3 | `todo buy groceries` |
+| 4 | `mark 1` |
+| 5 | `mark 2` |
+| 6 | `find book` |
+| 7 | `find movie` |
+| 8 | `find` |
+| 9 | `bye` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+ Got it. I've added this task:
+   [T][ ] read book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+ Got it. I've added this task:
+   [D][ ] return book (by: Jun 6 2019 12:00 AM)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 3
+
+```text
+ Got it. I've added this task:
+   [T][ ] buy groceries
+ Now you have 3 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 4
+
+```text
+ Nice! I've marked this task as done:
+   [T][X] read book
+____________________________________________________________
+```
+
+#### Expected output after step 5
+
+```text
+ Nice! I've marked this task as done:
+   [D][X] return book (by: Jun 6 2019 12:00 AM)
+____________________________________________________________
+```
+
+#### Expected output after step 6
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][X] read book
+ 2.[D][X] return book (by: Jun 6 2019 12:00 AM)
+____________________________________________________________
+```
+
+#### Expected output after step 7
+
+```text
+ Here are the matching tasks in your list:
+____________________________________________________________
+```
+
+#### Expected output after step 8
+
+```text
+Please specify a keyword. For example: find book
+____________________________________________________________
+```
+
+#### Expected output after step 9
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
 ```
