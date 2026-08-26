@@ -22,6 +22,7 @@ bin/
 .codex/skills/*
 !.codex/skills/keep-code-simple/
 !.codex/skills/seedu-java-coding-standard/
+!.codex/skills/seedu-git-standard/
 
 # Temp files
 _temp/

@@ -57,6 +57,9 @@ After every update to application code:
 
 ## Git
 
+Before naming or creating a branch, or proposing, reviewing, or creating a commit, read and apply
+`.codex/skills/seedu-git-standard/SKILL.md`. All branch names and commits must follow that skill.
+
 Use lightweight tags unless the user requests an annotated tag.
 When proposing or creating a commit message, include enough detail to explain the rationale for the change.
 Do not commit or push unless explicitly asked.
