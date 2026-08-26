@@ -11,8 +11,8 @@ import henry.task.Task;
 import henry.task.TaskList;
 import henry.ui.Ui;
 
-/*
-Starts the Henry chatbot application.
+/**
+ * Starts the Henry chatbot application.
  */
 public class Henry {
     /**
