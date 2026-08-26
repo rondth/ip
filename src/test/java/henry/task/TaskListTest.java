@@ -71,4 +71,23 @@ public class TaskListTest {
         taskList.unmark(0);
         assertFalse(task.isDone());
     }
+
+    @Test
+    public void find_matchingKeyword_returnsMatchingTasksInOriginalOrder() {
+        Task firstMatch = new Todo("read book");
+        Task nonMatch = new Todo("buy groceries");
+        Task secondMatch = new Todo("return book");
+        TaskList taskList = new TaskList(List.of(firstMatch, nonMatch, secondMatch));
+
+        List<Task> matches = taskList.find("book");
+
+        assertEquals(List.of(firstMatch, secondMatch), matches);
+    }
+
+    @Test
+    public void find_noMatchingKeyword_returnsEmptyList() {
+        TaskList taskList = new TaskList(List.of(new Todo("read book")));
+
+        assertTrue(taskList.find("groceries").isEmpty());
+    }
 }

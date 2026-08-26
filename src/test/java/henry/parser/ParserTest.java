@@ -23,6 +23,7 @@ public class ParserTest {
         assertEquals(CommandType.MARK, Parser.parseCommandType("mark"));
         assertEquals(CommandType.UNMARK, Parser.parseCommandType("unmark"));
         assertEquals(CommandType.DELETE, Parser.parseCommandType("delete"));
+        assertEquals(CommandType.FIND, Parser.parseCommandType("find"));
         assertEquals(CommandType.TODO, Parser.parseCommandType("todo"));
         assertEquals(CommandType.DEADLINE, Parser.parseCommandType("deadline"));
         assertEquals(CommandType.EVENT, Parser.parseCommandType("event"));
@@ -31,6 +32,7 @@ public class ParserTest {
     @Test
     public void parseCommandType_commandWithArguments_returnsMatchingType() {
         assertEquals(CommandType.MARK, Parser.parseCommandType("mark 1"));
+        assertEquals(CommandType.FIND, Parser.parseCommandType("find book"));
         assertEquals(CommandType.TODO, Parser.parseCommandType("todo read book"));
         assertEquals(CommandType.EVENT,
                 Parser.parseCommandType("event meeting /from 2pm /to 3pm"));
@@ -97,6 +99,19 @@ public class ParserTest {
                 () -> Parser.parseTaskIndex("delete 4", CommandType.DELETE, 3));
 
         assertEquals("Task 4 does not exist. Choose a number from 1 to 3.", exception.getMessage());
+    }
+
+    @Test
+    public void parseKeyword_keywordProvided_returnsKeyword() throws HenryException {
+        assertEquals("read book", Parser.parseKeyword("find   read book  "));
+    }
+
+    @Test
+    public void parseKeyword_keywordMissing_exceptionThrown() {
+        HenryException exception = assertThrows(HenryException.class,
+                () -> Parser.parseKeyword("find"));
+
+        assertEquals("Please specify a keyword. For example: find book", exception.getMessage());
     }
 
     @Test
