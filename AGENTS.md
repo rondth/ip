@@ -32,6 +32,15 @@ Before starting any task involving code, read and apply `.codex/skills/keep-code
 
 Ensure that Java 25 is used when running the application or build tasks. On macOS, use `sdk use java 25.0.3.fx-zulu` to switch to Java 25 if needed.
 
+## JUnit testing
+
+Maintain JUnit tests for approximately the top 50% highest-value methods. Prioritize complex,
+core, and critical business logic over trivial constructors, getters, and output-only wrappers.
+
+After every code change, review the affected behavior and update or add JUnit tests as needed to
+continue meeting this coverage target. Run the relevant Gradle tests before considering the change
+complete.
+
 ## Post-update UI testing
 
 After every update to application code:
