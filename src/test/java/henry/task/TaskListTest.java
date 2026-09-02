@@ -30,8 +30,8 @@ public class TaskListTest {
     public void asList_addAttempt_throwsUnsupportedOperationException() {
         TaskList taskList = new TaskList(List.of(new Todo("existing")));
 
-        assertThrows(UnsupportedOperationException.class,
-                () -> taskList.asList().add(new Todo("new")));
+        assertThrows(UnsupportedOperationException.class, () ->
+                taskList.asList().add(new Todo("new")));
     }
 
     @Test
