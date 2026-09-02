@@ -42,20 +42,20 @@ public class DeadlineTest {
 
     @Test
     public void parseBy_nonLeapDay_exceptionThrown() {
-        assertThrows(DateTimeParseException.class,
-                () -> Deadline.parseBy("29/2/2023 1200"));
+        assertThrows(DateTimeParseException.class, () ->
+                Deadline.parseBy("29/2/2023 1200"));
     }
 
     @Test
     public void parseBy_invalidTime_exceptionThrown() {
-        assertThrows(DateTimeParseException.class,
-                () -> Deadline.parseBy("2/12/2019 2400"));
+        assertThrows(DateTimeParseException.class, () ->
+                Deadline.parseBy("2/12/2019 2400"));
     }
 
     @Test
     public void parseBy_unsupportedFormat_exceptionThrown() {
-        assertThrows(DateTimeParseException.class,
-                () -> Deadline.parseBy("December 2, 2019"));
+        assertThrows(DateTimeParseException.class, () ->
+                Deadline.parseBy("December 2, 2019"));
     }
 
     @Test

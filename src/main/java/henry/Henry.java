@@ -74,6 +74,8 @@ public class Henry {
                     case UNKNOWN:
                         throw new HenryException("I don't recognise that command. Try todo, "
                                 + "deadline, event, list, find, mark, unmark, delete, or bye.");
+                    default:
+                        throw new AssertionError("Unhandled command type: " + commandType);
                 }
             } catch (HenryException e) {
                 ui.showMessage(e.getMessage());

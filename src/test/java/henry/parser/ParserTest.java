@@ -63,40 +63,40 @@ public class ParserTest {
 
     @Test
     public void parseTaskIndex_missingTaskNumber_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTaskIndex("mark", CommandType.MARK, 3));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTaskIndex("mark", CommandType.MARK, 3));
 
         assertEquals("Please specify a task number. For example: mark 1", exception.getMessage());
     }
 
     @Test
     public void parseTaskIndex_nonNumericTaskNumber_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTaskIndex("delete two", CommandType.DELETE, 3));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTaskIndex("delete two", CommandType.DELETE, 3));
 
         assertEquals("'two' is not a valid task number.", exception.getMessage());
     }
 
     @Test
     public void parseTaskIndex_emptyTaskList_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTaskIndex("mark 1", CommandType.MARK, 0));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTaskIndex("mark 1", CommandType.MARK, 0));
 
         assertEquals("There are no tasks to mark yet.", exception.getMessage());
     }
 
     @Test
     public void parseTaskIndex_zeroTaskNumber_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTaskIndex("mark 0", CommandType.MARK, 3));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTaskIndex("mark 0", CommandType.MARK, 3));
 
         assertEquals("Task 0 does not exist. Choose a number from 1 to 3.", exception.getMessage());
     }
 
     @Test
     public void parseTaskIndex_taskNumberAboveTaskCount_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTaskIndex("delete 4", CommandType.DELETE, 3));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTaskIndex("delete 4", CommandType.DELETE, 3));
 
         assertEquals("Task 4 does not exist. Choose a number from 1 to 3.", exception.getMessage());
     }
@@ -108,8 +108,8 @@ public class ParserTest {
 
     @Test
     public void parseKeyword_keywordMissing_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseKeyword("find"));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseKeyword("find"));
 
         assertEquals("Please specify a keyword. For example: find book", exception.getMessage());
     }
@@ -124,8 +124,8 @@ public class ParserTest {
 
     @Test
     public void parseTask_todoWithoutDescription_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("todo", CommandType.TODO));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("todo", CommandType.TODO));
 
         assertEquals("A todo needs a description. For example: todo borrow a book",
                 exception.getMessage());
@@ -142,8 +142,8 @@ public class ParserTest {
 
     @Test
     public void parseTask_deadlineWithoutBySeparator_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("deadline submit report", CommandType.DEADLINE));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("deadline submit report", CommandType.DEADLINE));
 
         assertEquals("A deadline needs '/by'. For example: deadline submit report /by 2019-12-02",
                 exception.getMessage());
@@ -151,24 +151,24 @@ public class ParserTest {
 
     @Test
     public void parseTask_deadlineWithoutDescription_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("deadline /by 2019-12-02", CommandType.DEADLINE));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("deadline /by 2019-12-02", CommandType.DEADLINE));
 
         assertEquals("A deadline needs a description before '/by'.", exception.getMessage());
     }
 
     @Test
     public void parseTask_deadlineWithoutDate_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("deadline submit report /by", CommandType.DEADLINE));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("deadline submit report /by", CommandType.DEADLINE));
 
         assertEquals("A deadline needs a date or time after '/by'.", exception.getMessage());
     }
 
     @Test
     public void parseTask_deadlineWithInvalidDate_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask(
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask(
                         "deadline submit report /by tomorrow", CommandType.DEADLINE));
 
         assertEquals("Please use a deadline date like 2/12/2019 1800 or 2019-12-02.",
@@ -186,8 +186,8 @@ public class ParserTest {
 
     @Test
     public void parseTask_eventWithoutFromSeparator_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("event meeting /to 3pm", CommandType.EVENT));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("event meeting /to 3pm", CommandType.EVENT));
 
         assertEquals("An event needs '/from' and '/to'. "
                 + "For example: event meeting /from 2pm /to 3pm", exception.getMessage());
@@ -195,39 +195,39 @@ public class ParserTest {
 
     @Test
     public void parseTask_eventWithoutToSeparator_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("event meeting /from 2pm", CommandType.EVENT));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("event meeting /from 2pm", CommandType.EVENT));
 
         assertEquals("An event needs an ending time introduced by '/to'.", exception.getMessage());
     }
 
     @Test
     public void parseTask_eventWithoutDescription_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("event /from 2pm /to 3pm", CommandType.EVENT));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("event /from 2pm /to 3pm", CommandType.EVENT));
 
         assertEquals("An event needs a description before '/from'.", exception.getMessage());
     }
 
     @Test
     public void parseTask_eventWithoutStartTime_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("event meeting /from /to 3pm", CommandType.EVENT));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("event meeting /from /to 3pm", CommandType.EVENT));
 
         assertEquals("An event needs a starting time after '/from'.", exception.getMessage());
     }
 
     @Test
     public void parseTask_eventWithoutEndTime_exceptionThrown() {
-        HenryException exception = assertThrows(HenryException.class,
-                () -> Parser.parseTask("event meeting /from 2pm /to", CommandType.EVENT));
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask("event meeting /from 2pm /to", CommandType.EVENT));
 
         assertEquals("An event needs an ending time after '/to'.", exception.getMessage());
     }
 
     @Test
     public void parseTask_nonTaskCommand_exceptionThrown() {
-        assertThrows(IllegalArgumentException.class,
-                () -> Parser.parseTask("list", CommandType.LIST));
+        assertThrows(IllegalArgumentException.class, () ->
+                Parser.parseTask("list", CommandType.LIST));
     }
 }
