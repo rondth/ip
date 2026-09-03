@@ -3,9 +3,9 @@ package henry.task;
 /**
  * Represents a task and whether it has been completed.
  */
-public class Task {
-    protected String description;
-    protected boolean isDone;
+public abstract class Task {
+    private final String description;
+    private boolean isDone;
 
     /**
      * Creates a task that is initially not done.
@@ -22,7 +22,7 @@ public class Task {
      *
      * @return {@code "X"} when done, or a space otherwise.
      */
-    public String getStatusIcon() {
+    private String getStatusIcon() {
         return isDone ? "X" : " ";
     }
 
@@ -38,10 +38,10 @@ public class Task {
     /**
      * Returns whether this task's description contains the given keyword.
      *
-     * @param keyword text to search for
-     * @return true when the keyword occurs in the description
+     * @param keyword text to search for.
+     * @return true when the keyword occurs in the description.
      */
-    public boolean descriptionContains(String keyword) {
+    boolean descriptionContains(String keyword) {
         return description.contains(keyword);
     }
 
