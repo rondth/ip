@@ -29,7 +29,13 @@ public class Storage {
      * @param tasks valid tasks recovered from the data file.
      * @param skippedLineCount number of malformed non-empty records.
      */
-    public record LoadResult(ArrayList<Task> tasks, int skippedLineCount) {
+    public record LoadResult(List<Task> tasks, int skippedLineCount) {
+        /**
+         * Creates an immutable loading result.
+         */
+        public LoadResult {
+            tasks = List.copyOf(tasks);
+        }
     }
 
     /**
@@ -51,7 +57,7 @@ public class Storage {
      * @throws IOException if the data file cannot be read.
      */
     public LoadResult load() throws IOException {
-        ArrayList<Task> tasks = new ArrayList<>();
+        List<Task> tasks = new ArrayList<>();
         if (!Files.exists(filePath)) {
             return new LoadResult(tasks, 0);
         }
@@ -77,11 +83,10 @@ public class Storage {
      * @throws IOException if the directory or file cannot be written.
      */
     public void save(List<Task> tasks) throws IOException {
-        Path targetFile = filePath;
-        Path parentDirectory = targetFile.getParent();
+        Path parentDirectory = filePath.toAbsolutePath().getParent();
         Files.createDirectories(parentDirectory);
 
-        ArrayList<String> taskLines = new ArrayList<>();
+        List<String> taskLines = new ArrayList<>();
         for (Task task : tasks) {
             taskLines.add(task.toFileString());
         }
@@ -89,7 +94,7 @@ public class Storage {
         Path temporaryFile = Files.createTempFile(parentDirectory, "henry-", ".tmp");
         try {
             Files.write(temporaryFile, taskLines, StandardCharsets.UTF_8);
-            replaceDataFile(temporaryFile, targetFile);
+            replaceDataFile(temporaryFile, filePath);
         } finally {
             // This is normally already moved. If replacement failed, avoid leaving clutter behind.
             Files.deleteIfExists(temporaryFile);
@@ -102,7 +107,7 @@ public class Storage {
      * @param taskLine stored representation of one task.
      * @return reconstructed task.
      */
-    private Task parseTask(String taskLine) {
+    private static Task parseTask(String taskLine) {
         List<String> fields = splitFields(taskLine);
         if (fields.size() < 3) {
             throw new IllegalArgumentException("Missing task fields");
@@ -147,7 +152,7 @@ public class Storage {
      * @return parsed deadline value.
      * @throws IllegalArgumentException if the stored value is not a valid date-time.
      */
-    private LocalDateTime parseDeadline(String deadline) {
+    private static LocalDateTime parseDeadline(String deadline) {
         try {
             return LocalDateTime.parse(deadline);
         } catch (DateTimeParseException e) {
@@ -163,7 +168,8 @@ public class Storage {
      * @param taskType stored one-letter task type used in the error message.
      * @throws IllegalArgumentException if the field count is incorrect.
      */
-    private void requireFieldCount(List<String> fields, int expectedCount, String taskType) {
+    private static void requireFieldCount(
+            List<String> fields, int expectedCount, String taskType) {
         if (fields.size() != expectedCount) {
             throw new IllegalArgumentException("Wrong number of fields for task type " + taskType);
         }
@@ -175,8 +181,8 @@ public class Storage {
      * @param taskLine complete stored task record.
      * @return decoded fields from the record.
      */
-    private List<String> splitFields(String taskLine) {
-        ArrayList<String> fields = new ArrayList<>();
+    private static List<String> splitFields(String taskLine) {
+        List<String> fields = new ArrayList<>();
         StringBuilder currentField = new StringBuilder();
 
         for (int i = 0; i < taskLine.length();) {
@@ -205,7 +211,7 @@ public class Storage {
      * @return the validated field.
      * @throws IllegalArgumentException if the field contains no non-whitespace text.
      */
-    private String requireText(String field, String fieldName) {
+    private static String requireText(String field, String fieldName) {
         if (field.isBlank()) {
             throw new IllegalArgumentException("Missing " + fieldName);
         }
@@ -219,7 +225,7 @@ public class Storage {
      * @param targetFile configured data-file location.
      * @throws IOException if neither replacement method succeeds.
      */
-    private void replaceDataFile(Path temporaryFile, Path targetFile) throws IOException {
+    private static void replaceDataFile(Path temporaryFile, Path targetFile) throws IOException {
         try {
             Files.move(temporaryFile, targetFile, StandardCopyOption.ATOMIC_MOVE,
                     StandardCopyOption.REPLACE_EXISTING);

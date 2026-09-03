@@ -15,7 +15,7 @@ public class Deadline extends Task {
             DateTimeFormatter.ofPattern("d/M/uuuu HHmm").withResolverStyle(ResolverStyle.STRICT);
     private static final DateTimeFormatter OUTPUT_FORMATTER =
             DateTimeFormatter.ofPattern("MMM d uuuu h:mm a", Locale.US);
-    protected LocalDateTime deadline;
+    private final LocalDateTime deadline;
 
     /**
      * Creates a deadline task that is initially not done.

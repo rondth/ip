@@ -8,13 +8,13 @@ import java.util.List;
  * Stores Henry's tasks and provides operations that change the task list.
  */
 public class TaskList {
-    private final ArrayList<Task> tasks;
+    private final List<Task> tasks;
 
     /**
      * Creates an empty task list.
      */
     public TaskList() {
-        tasks = new ArrayList<>();
+        this(List.of());
     }
 
     /**
@@ -57,8 +57,8 @@ public class TaskList {
     /**
      * Finds tasks whose descriptions contain the given keyword.
      *
-     * @param keyword text to search for
-     * @return matching tasks in their original order
+     * @param keyword text to search for.
+     * @return matching tasks in their original order.
      */
     public List<Task> find(String keyword) {
         return tasks.stream()

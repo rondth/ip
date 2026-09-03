@@ -13,6 +13,9 @@ import henry.task.Todo;
  * Interprets user input and converts command arguments into application values.
  */
 public class Parser {
+    private Parser() {
+    }
+
     /**
      * Identifies the command represented by the given input.
      *
@@ -62,9 +65,9 @@ public class Parser {
     /**
      * Extracts the keyword supplied to a find command.
      *
-     * @param input complete user input
-     * @return keyword to search for
-     * @throws HenryException if no keyword was supplied
+     * @param input complete user input.
+     * @return keyword to search for.
+     * @throws HenryException if no keyword was supplied.
      */
     public static String parseKeyword(String input) throws HenryException {
         String keyword = extractArguments(input, CommandType.FIND);

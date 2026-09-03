@@ -4,8 +4,8 @@ package henry.task;
  * Represents a task that takes place between specified start and end times.
  */
 public class Event extends Task {
-    protected String startTime;
-    protected String endTime;
+    private final String startTime;
+    private final String endTime;
 
     /**
      * Creates an event task that is initially not done.

@@ -2,6 +2,7 @@ package henry;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.List;
 
 import henry.exception.HenryException;
 import henry.parser.CommandType;
@@ -15,90 +16,125 @@ import henry.ui.Ui;
  * Starts the Henry chatbot application.
  */
 public class Henry {
+    private static final Path DEFAULT_DATA_FILE_PATH = Path.of("data", "henry.txt");
+    private static final String GOODBYE_MESSAGE = "Bye. Hope to see you again soon!";
+
+    private final Storage storage;
+    private final TaskList tasks;
+    private final String startupMessage;
+
+    private CommandType lastCommandType = CommandType.UNKNOWN;
+
+    /**
+     * Creates Henry using the default data file.
+     */
+    public Henry() {
+        this(DEFAULT_DATA_FILE_PATH);
+    }
+
+    /**
+     * Creates Henry using the specified data file.
+     *
+     * @param dataFilePath path of the file used to persist tasks.
+     */
+    public Henry(Path dataFilePath) {
+        storage = new Storage(dataFilePath);
+
+        TaskList loadedTasks;
+        String loadingMessage = "";
+        try {
+            Storage.LoadResult result = storage.load();
+            loadedTasks = new TaskList(result.tasks());
+            if (result.skippedLineCount() > 0) {
+                int skippedLineCount = result.skippedLineCount();
+                String recordLabel = skippedLineCount == 1 ? "record was" : "records were";
+                loadingMessage = "Warning: " + skippedLineCount + " malformed task "
+                        + recordLabel + " skipped while loading " + dataFilePath + ".";
+            }
+        } catch (IOException e) {
+            loadedTasks = new TaskList();
+            loadingMessage = "I couldn't load tasks from " + dataFilePath
+                    + ". Starting with an empty task list.";
+        }
+        tasks = loadedTasks;
+        startupMessage = loadingMessage;
+    }
+
     /**
      * Greets the user, stores tasks, updates or deletes tasks, lists saved tasks, and exits
      * when the user enters bye.
      *
      * @param args command-line arguments; not used.
      */
-    @SuppressWarnings("unused")
     public static void main(String[] args) {
         Ui ui = new Ui();
+        Henry henry = new Henry();
         ui.showWelcome();
-        Storage storage = new Storage(Path.of("data", "henry.txt"));
-        TaskList tasks = loadTasks(storage, ui);
+        if (!henry.getStartupMessage().isEmpty()) {
+            ui.showMessage(henry.getStartupMessage());
+        }
 
         while (ui.hasNextCommand()) {
             String command = ui.readCommand();
-            CommandType commandType = Parser.parseCommandType(command);
-            try {
-                switch (commandType) {
-                    case BYE:
-                        ui.showGoodbye();
-                        return;
-                    case LIST:
-                        ui.showTaskList(tasks.asList());
-                        break;
-                    case FIND:
-                        String keyword = Parser.parseKeyword(command);
-                        ui.showMatchingTasks(tasks.find(keyword));
-                        break;
-                    case MARK:
-                        int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
-                        updateTaskStatus(tasks, taskIndex, true, storage);
-                        ui.showTaskMarked(tasks.get(taskIndex));
-                        break;
-                    case UNMARK:
-                        int unmarkedTaskIndex = Parser.parseTaskIndex(
-                                command, commandType, tasks.size());
-                        updateTaskStatus(tasks, unmarkedTaskIndex, false, storage);
-                        ui.showTaskUnmarked(tasks.get(unmarkedTaskIndex));
-                        break;
-                    case DELETE:
-                        int deletedTaskIndex = Parser.parseTaskIndex(
-                                command, commandType, tasks.size());
-                        Task removedTask = tasks.delete(deletedTaskIndex);
-                        try {
-                            storage.save(tasks.asList());
-                        } catch (IOException e) {
-                            tasks.add(deletedTaskIndex, removedTask);
-                            throw e;
-                        }
-                        ui.showTaskDeleted(removedTask, tasks.size());
-                        break;
-                    case TODO:
-                    case DEADLINE:
-                    case EVENT:
-                        addTask(tasks, Parser.parseTask(command, commandType), storage, ui);
-                        break;
-                    case UNKNOWN:
-                        throw new HenryException("I don't recognise that command. Try todo, "
-                                + "deadline, event, list, find, mark, unmark, delete, or bye.");
-                    default:
-                        throw new AssertionError("Unhandled command type: " + commandType);
-                }
-            } catch (HenryException e) {
-                ui.showMessage(e.getMessage());
-                continue;
-            } catch (IOException e) {
-                ui.showMessage("I couldn't save your tasks. Your last change was not applied.");
-                continue;
+            ui.showMessage(henry.getResponse(command));
+            if (henry.getLastCommandType() == CommandType.BYE) {
+                return;
             }
-            ui.showSeparator();
         }
     }
 
     /**
-     * Adds a task to the list and prints its confirmation.
+     * Returns any warning produced while loading saved tasks.
      *
-     * @param tasks task list to update.
-     * @param task task to add.
-     * @param storage storage used to save the updated list.
-     * @param ui console UI used to display the confirmation.
-     * @throws IOException if the updated task list cannot be saved.
+     * @return loading warning, or an empty string when loading succeeded normally.
      */
-    private static void addTask(TaskList tasks, Task task, Storage storage, Ui ui)
-            throws IOException {
+    public String getStartupMessage() {
+        return startupMessage;
+    }
+
+    /**
+     * Returns the type of the most recently processed command.
+     *
+     * @return most recent command type, or {@link CommandType#UNKNOWN} before processing begins.
+     */
+    public CommandType getLastCommandType() {
+        return lastCommandType;
+    }
+
+    /**
+     * Processes a user command and returns Henry's response.
+     *
+     * @param input user command to process.
+     * @return response suitable for display in either the console or GUI.
+     */
+    public String getResponse(String input) {
+        String command = input.trim();
+        CommandType commandType = Parser.parseCommandType(command);
+        lastCommandType = commandType;
+
+        try {
+            return switch (commandType) {
+                case BYE -> GOODBYE_MESSAGE;
+                case LIST -> formatTaskList(" Here are the tasks in your list:", tasks.asList());
+                case FIND -> formatTaskList(" Here are the matching tasks in your list:",
+                        tasks.find(Parser.parseKeyword(command)));
+                case MARK -> updateTaskStatus(command, commandType, true);
+                case UNMARK -> updateTaskStatus(command, commandType, false);
+                case DELETE -> deleteTask(command);
+                case TODO, DEADLINE, EVENT -> addTask(
+                        Parser.parseTask(command, commandType));
+                case UNKNOWN -> throw new HenryException(
+                        "I don't recognise that command. Try todo, deadline, event, list, find, "
+                                + "mark, unmark, delete, or bye.");
+            };
+        } catch (HenryException e) {
+            return e.getMessage();
+        } catch (IOException e) {
+            return "I couldn't save your tasks. Your last change was not applied.";
+        }
+    }
+
+    private String addTask(Task task) throws IOException {
         tasks.add(task);
         try {
             storage.save(tasks.asList());
@@ -106,39 +142,26 @@ public class Henry {
             tasks.delete(tasks.size() - 1);
             throw e;
         }
-        ui.showTaskAdded(task, tasks.size());
+        return " Got it. I've added this task:\n   " + task
+                + "\n Now you have " + tasks.size() + " tasks in the list.";
     }
 
-    /**
-     * Loads tasks without allowing a missing, unreadable, or partially malformed file to crash
-     * the chatbot.
-     *
-     * @param storage storage used to load tasks.
-     * @param ui console UI used to display loading warnings.
-     * @return loaded tasks, or an empty list when loading fails.
-     */
-    private static TaskList loadTasks(Storage storage, Ui ui) {
+    private String deleteTask(String command) throws HenryException, IOException {
+        int taskIndex = Parser.parseTaskIndex(command, CommandType.DELETE, tasks.size());
+        Task removedTask = tasks.delete(taskIndex);
         try {
-            Storage.LoadResult result = storage.load();
-            if (result.skippedLineCount() > 0) {
-                int skippedLineCount = result.skippedLineCount();
-                String recordLabel = skippedLineCount == 1 ? "record was" : "records were";
-                ui.showMessage("Warning: " + skippedLineCount + " malformed task "
-                        + recordLabel + " skipped while loading data/henry.txt.");
-            }
-            return new TaskList(result.tasks());
+            storage.save(tasks.asList());
         } catch (IOException e) {
-            ui.showMessage("I couldn't load tasks from data/henry.txt. "
-                    + "Starting with an empty task list.");
-            return new TaskList();
+            tasks.add(taskIndex, removedTask);
+            throw e;
         }
+        return " Noted. I've removed this task:\n   " + removedTask
+                + "\n Now you have " + tasks.size() + " tasks in the list.";
     }
 
-    /**
-     * Changes a task's status and restores it if the updated list cannot be saved.
-     */
-    private static void updateTaskStatus(TaskList tasks, int taskIndex, boolean isDone,
-            Storage storage) throws IOException {
+    private String updateTaskStatus(String command, CommandType commandType, boolean isDone)
+            throws HenryException, IOException {
+        int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
         if (isDone) {
@@ -157,5 +180,18 @@ public class Henry {
             }
             throw e;
         }
+
+        if (isDone) {
+            return " Nice! I've marked this task as done:\n   " + task;
+        }
+        return " OK, I've marked this task as not done yet:\n   " + task;
+    }
+
+    private static String formatTaskList(String heading, List<Task> displayedTasks) {
+        StringBuilder response = new StringBuilder(heading);
+        for (int i = 0; i < displayedTasks.size(); i++) {
+            response.append("\n ").append(i + 1).append(".").append(displayedTasks.get(i));
+        }
+        return response.toString();
     }
 }
