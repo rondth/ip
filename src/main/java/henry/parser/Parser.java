@@ -13,6 +13,10 @@ import henry.task.Todo;
  * Interprets user input and converts command arguments into application values.
  */
 public class Parser {
+    private static final String DEADLINE_SEPARATOR = "/by";
+    private static final String EVENT_START_SEPARATOR = "/from";
+    private static final String EVENT_END_SEPARATOR = "/to";
+
     private Parser() {
     }
 
@@ -106,14 +110,15 @@ public class Parser {
 
     private static Deadline parseDeadline(String input) throws HenryException {
         String taskDetails = extractArguments(input, CommandType.DEADLINE);
-        int bySeparatorIndex = taskDetails.indexOf("/by");
+        int bySeparatorIndex = taskDetails.indexOf(DEADLINE_SEPARATOR);
         if (bySeparatorIndex < 0) {
             throw new HenryException(
                     "A deadline needs '/by'. For example: deadline submit report /by 2019-12-02");
         }
 
         String description = taskDetails.substring(0, bySeparatorIndex).trim();
-        String by = taskDetails.substring(bySeparatorIndex + 3).trim();
+        String by = taskDetails.substring(
+                bySeparatorIndex + DEADLINE_SEPARATOR.length()).trim();
         if (description.isEmpty()) {
             throw new HenryException("A deadline needs a description before '/by'.");
         }
@@ -132,21 +137,23 @@ public class Parser {
 
     private static Event parseEvent(String input) throws HenryException {
         String taskDetails = extractArguments(input, CommandType.EVENT);
-        int fromSeparatorIndex = taskDetails.indexOf("/from");
+        int fromSeparatorIndex = taskDetails.indexOf(EVENT_START_SEPARATOR);
         if (fromSeparatorIndex < 0) {
             throw new HenryException(
                     "An event needs '/from' and '/to'. "
                             + "For example: event meeting /from 2pm /to 3pm");
         }
 
-        int toSeparatorIndex = taskDetails.indexOf("/to", fromSeparatorIndex + 5);
+        int fromValueIndex = fromSeparatorIndex + EVENT_START_SEPARATOR.length();
+        int toSeparatorIndex = taskDetails.indexOf(EVENT_END_SEPARATOR, fromValueIndex);
         if (toSeparatorIndex < 0) {
             throw new HenryException("An event needs an ending time introduced by '/to'.");
         }
 
         String description = taskDetails.substring(0, fromSeparatorIndex).trim();
-        String from = taskDetails.substring(fromSeparatorIndex + 5, toSeparatorIndex).trim();
-        String to = taskDetails.substring(toSeparatorIndex + 3).trim();
+        String from = taskDetails.substring(fromValueIndex, toSeparatorIndex).trim();
+        String to = taskDetails.substring(
+                toSeparatorIndex + EVENT_END_SEPARATOR.length()).trim();
         if (description.isEmpty()) {
             throw new HenryException("An event needs a description before '/from'.");
         }
