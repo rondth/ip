@@ -61,14 +61,14 @@ public class TaskListTest {
     }
 
     @Test
-    public void markThenUnmark_task_updatesCompletionStatus() {
+    public void setDone_trueThenFalse_updatesCompletionStatus() {
         Task task = new Todo("read book");
         TaskList taskList = new TaskList(List.of(task));
 
-        taskList.mark(0);
+        taskList.setDone(0, true);
         assertTrue(task.isDone());
 
-        taskList.unmark(0);
+        taskList.setDone(0, false);
         assertFalse(task.isDone());
     }
 

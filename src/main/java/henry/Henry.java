@@ -118,8 +118,7 @@ public class Henry {
                 case LIST -> formatTaskList(" Here are the tasks in your list:", tasks.asList());
                 case FIND -> formatTaskList(" Here are the matching tasks in your list:",
                         tasks.find(Parser.parseKeyword(command)));
-                case MARK -> updateTaskStatus(command, commandType, true);
-                case UNMARK -> updateTaskStatus(command, commandType, false);
+                case MARK, UNMARK -> updateTaskStatus(command, commandType);
                 case DELETE -> deleteTask(command);
                 case TODO, DEADLINE, EVENT -> addTask(
                         Parser.parseTask(command, commandType));
@@ -159,25 +158,18 @@ public class Henry {
                 + "\n Now you have " + tasks.size() + " tasks in the list.";
     }
 
-    private String updateTaskStatus(String command, CommandType commandType, boolean isDone)
+    private String updateTaskStatus(String command, CommandType commandType)
             throws HenryException, IOException {
         int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
-        if (isDone) {
-            tasks.mark(taskIndex);
-        } else {
-            tasks.unmark(taskIndex);
-        }
+        boolean isDone = commandType == CommandType.MARK;
+        tasks.setDone(taskIndex, isDone);
 
         try {
             storage.save(tasks.asList());
         } catch (IOException e) {
-            if (wasDone) {
-                tasks.mark(taskIndex);
-            } else {
-                tasks.unmark(taskIndex);
-            }
+            tasks.setDone(taskIndex, wasDone);
             throw e;
         }
 

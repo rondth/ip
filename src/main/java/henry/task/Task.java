@@ -46,17 +46,12 @@ public abstract class Task {
     }
 
     /**
-     * Marks this task as completed.
+     * Sets whether this task has been completed.
+     *
+     * @param isDone true to mark the task as done, or false to mark it as not done.
      */
-    public void markAsDone() {
-        isDone = true;
-    }
-
-    /**
-     * Marks this task as not completed.
-     */
-    public void markAsNotDone() {
-        isDone = false;
+    public void setDone(boolean isDone) {
+        this.isDone = isDone;
     }
 
     /**
