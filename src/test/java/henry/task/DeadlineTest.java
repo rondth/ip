@@ -62,7 +62,7 @@ public class DeadlineTest {
     public void toFileString_markedDeadlineWithSpecialCharacters_escapesDescription() {
         Deadline deadline = new Deadline(
                 "submit | draft \\ report", LocalDateTime.of(2019, 12, 2, 18, 0));
-        deadline.markAsDone();
+        deadline.setDone(true);
 
         assertEquals("D | 1 | submit \\| draft \\\\ report | 2019-12-02T18:00",
                 deadline.toFileString());

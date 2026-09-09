@@ -96,20 +96,12 @@ public class TaskList {
     }
 
     /**
-     * Marks the selected task as done.
+     * Sets whether the selected task has been completed.
      *
      * @param index task index.
+     * @param isDone true to mark the task as done, or false to mark it as not done.
      */
-    public void mark(int index) {
-        tasks.get(index).markAsDone();
-    }
-
-    /**
-     * Marks the selected task as not done.
-     *
-     * @param index task index.
-     */
-    public void unmark(int index) {
-        tasks.get(index).markAsNotDone();
+    public void setDone(int index, boolean isDone) {
+        tasks.get(index).setDone(isDone);
     }
 }

@@ -118,8 +118,7 @@ public class Henry {
                 case LIST -> formatTaskList(" Here are the tasks in your list:", tasks.asList());
                 case FIND -> formatTaskList(" Here are the matching tasks in your list:",
                         tasks.find(Parser.parseKeyword(command)));
-                case MARK -> updateTaskStatus(command, commandType, true);
-                case UNMARK -> updateTaskStatus(command, commandType, false);
+                case MARK, UNMARK -> updateTaskStatus(command, commandType);
                 case DELETE -> deleteTask(command);
                 case TODO, DEADLINE, EVENT -> addTask(
                         Parser.parseTask(command, commandType));
@@ -135,70 +134,42 @@ public class Henry {
     }
 
     private String addTask(Task task) throws IOException {
-        int originalTaskCount = tasks.size();
         tasks.add(task);
-        assert tasks.size() == originalTaskCount + 1
-                : "Adding a task should increase the task count by one";
-        try {
-            storage.save(tasks.asList());
-        } catch (IOException e) {
-            tasks.delete(tasks.size() - 1);
-            assert tasks.size() == originalTaskCount
-                    : "A failed addition should restore the original task count";
-            throw e;
-        }
+        saveOrRollback(() -> tasks.delete(tasks.size() - 1));
         return " Got it. I've added this task:\n   " + task
                 + "\n Now you have " + tasks.size() + " tasks in the list.";
     }
 
     private String deleteTask(String command) throws HenryException, IOException {
         int taskIndex = Parser.parseTaskIndex(command, CommandType.DELETE, tasks.size());
-        int originalTaskCount = tasks.size();
         Task removedTask = tasks.delete(taskIndex);
-        assert tasks.size() == originalTaskCount - 1
-                : "Deleting a task should reduce the task count by one";
-        try {
-            storage.save(tasks.asList());
-        } catch (IOException e) {
-            tasks.add(taskIndex, removedTask);
-            assert tasks.size() == originalTaskCount
-                    : "A failed deletion should restore the original task count";
-            throw e;
-        }
+        saveOrRollback(() -> tasks.add(taskIndex, removedTask));
         return " Noted. I've removed this task:\n   " + removedTask
                 + "\n Now you have " + tasks.size() + " tasks in the list.";
     }
 
-    private String updateTaskStatus(String command, CommandType commandType, boolean isDone)
+    private String updateTaskStatus(String command, CommandType commandType)
             throws HenryException, IOException {
         int taskIndex = Parser.parseTaskIndex(command, commandType, tasks.size());
         Task task = tasks.get(taskIndex);
         boolean wasDone = task.isDone();
-        if (isDone) {
-            tasks.mark(taskIndex);
-        } else {
-            tasks.unmark(taskIndex);
-        }
-        assert task.isDone() == isDone
-                : "Updating a task should apply the requested completion status";
-
-        try {
-            storage.save(tasks.asList());
-        } catch (IOException e) {
-            if (wasDone) {
-                tasks.mark(taskIndex);
-            } else {
-                tasks.unmark(taskIndex);
-            }
-            assert task.isDone() == wasDone
-                    : "A failed status update should restore the original status";
-            throw e;
-        }
+        boolean isDone = commandType == CommandType.MARK;
+        tasks.setDone(taskIndex, isDone);
+        saveOrRollback(() -> tasks.setDone(taskIndex, wasDone));
 
         if (isDone) {
             return " Nice! I've marked this task as done:\n   " + task;
         }
         return " OK, I've marked this task as not done yet:\n   " + task;
+    }
+
+    private void saveOrRollback(Runnable rollbackAction) throws IOException {
+        try {
+            storage.save(tasks.asList());
+        } catch (IOException e) {
+            rollbackAction.run();
+            throw e;
+        }
     }
 
     private static String formatTaskList(String heading, List<Task> displayedTasks) {

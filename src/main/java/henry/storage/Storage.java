@@ -138,9 +138,7 @@ public class Storage {
             default -> throw new IllegalArgumentException("Unknown task type: " + taskType);
         };
 
-        if (isDone) {
-            task.markAsDone();
-        }
+        task.setDone(isDone);
         return task;
     }
 

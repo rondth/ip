@@ -40,7 +40,7 @@ public class StorageTest {
         Path dataFile = temporaryDirectory.resolve("nested").resolve("henry.txt");
         Storage storage = new Storage(dataFile);
         Todo todo = new Todo("read book");
-        todo.markAsDone();
+        todo.setDone(true);
         List<Task> tasks = List.of(
                 todo,
                 new Deadline("submit report", LocalDateTime.of(2025, 8, 26, 18, 0)),
