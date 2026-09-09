@@ -1028,3 +1028,119 @@ ____________________________________________________________
 Bye. Hope to see you again soon!
 ____________________________________________________________
 ```
+
+### UI-13: Use command aliases
+
+**Aim:** Verify that every fixed alias performs the same operation as its full command.
+
+| Step | Input |
+| --- | --- |
+| 1 | `t borrow book` |
+| 2 | `d return book /by 2019-06-06` |
+| 3 | `e project meeting /from 2pm /to 3pm` |
+| 4 | `l` |
+| 5 | `m 1` |
+| 6 | `u 1` |
+| 7 | `f book` |
+| 8 | `del 3` |
+| 9 | `b` |
+
+#### Expected startup output
+
+```text
+____________________________________________________________
+ _   _                      
+| | | | ___ _ __  _ __ _   _
+| |_| |/ _ \ '_ \| '__| | | |
+|  _  |  __/ | | | |  | |_| |
+|_| |_|\___|_| |_|_|   \__, |
+                       |___/ 
+Hello! I'm Henry.
+What can I do for you?
+____________________________________________________________
+```
+
+#### Expected output after step 1
+
+```text
+ Got it. I've added this task:
+   [T][ ] borrow book
+ Now you have 1 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 2
+
+```text
+ Got it. I've added this task:
+   [D][ ] return book (by: Jun 6 2019 12:00 AM)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 3
+
+```text
+ Got it. I've added this task:
+   [E][ ] project meeting (from: 2pm to: 3pm)
+ Now you have 3 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 4
+
+```text
+ Here are the tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] return book (by: Jun 6 2019 12:00 AM)
+ 3.[E][ ] project meeting (from: 2pm to: 3pm)
+____________________________________________________________
+```
+
+#### Expected output after step 5
+
+```text
+ Nice! I've marked this task as done:
+   [T][X] borrow book
+____________________________________________________________
+```
+
+#### Expected output after step 6
+
+```text
+ OK, I've marked this task as not done yet:
+   [T][ ] borrow book
+____________________________________________________________
+```
+
+#### Expected output after step 7
+
+```text
+ Here are the matching tasks in your list:
+ 1.[T][ ] borrow book
+ 2.[D][ ] return book (by: Jun 6 2019 12:00 AM)
+____________________________________________________________
+```
+
+#### Expected output after step 8
+
+```text
+ Noted. I've removed this task:
+   [E][ ] project meeting (from: 2pm to: 3pm)
+ Now you have 2 tasks in the list.
+____________________________________________________________
+```
+
+#### Expected output after step 9
+
+```text
+Bye. Hope to see you again soon!
+____________________________________________________________
+```
+
+#### Expected `data/henry.txt` after step 9
+
+```text
+T | 0 | borrow book
+D | 0 | return book | 2019-06-06T00:00
+```

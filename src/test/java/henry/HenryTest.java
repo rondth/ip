@@ -34,6 +34,24 @@ public class HenryTest {
     }
 
     @Test
+    public void getResponse_aliases_executeCanonicalCommands() {
+        Henry henry = new Henry(temporaryDirectory.resolve("henry.txt"));
+
+        String addResponse = henry.getResponse("t borrow book");
+        String markResponse = henry.getResponse("m 1");
+        String listResponse = henry.getResponse("l");
+
+        assertEquals(" Got it. I've added this task:\n"
+                + "   [T][ ] borrow book\n"
+                + " Now you have 1 tasks in the list.", addResponse);
+        assertEquals(" Nice! I've marked this task as done:\n"
+                + "   [T][X] borrow book", markResponse);
+        assertEquals(" Here are the tasks in your list:\n"
+                + " 1.[T][X] borrow book", listResponse);
+        assertEquals(CommandType.LIST, henry.getLastCommandType());
+    }
+
+    @Test
     public void getResponse_invalidCommand_returnsErrorWithoutThrowing() {
         Henry henry = new Henry(temporaryDirectory.resolve("henry.txt"));
 

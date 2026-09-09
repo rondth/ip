@@ -42,7 +42,7 @@ public class Parser {
     public static int parseTaskIndex(String input, CommandType commandType, int taskCount)
             throws HenryException {
         String commandWord = commandType.getCommandWord();
-        String argument = extractArguments(input, commandType);
+        String argument = extractArguments(input);
         if (argument.isEmpty()) {
             throw new HenryException(
                     "Please specify a task number. For example: " + commandWord + " 1");
@@ -74,7 +74,7 @@ public class Parser {
      * @throws HenryException if no keyword was supplied.
      */
     public static String parseKeyword(String input) throws HenryException {
-        String keyword = extractArguments(input, CommandType.FIND);
+        String keyword = extractArguments(input);
         if (keyword.isEmpty()) {
             throw new HenryException(
                     "Please specify a keyword. For example: find book");
@@ -100,7 +100,7 @@ public class Parser {
     }
 
     private static Todo parseTodo(String input) throws HenryException {
-        String description = extractArguments(input, CommandType.TODO);
+        String description = extractArguments(input);
         if (description.isEmpty()) {
             throw new HenryException(
                     "A todo needs a description. For example: todo borrow a book");
@@ -109,7 +109,7 @@ public class Parser {
     }
 
     private static Deadline parseDeadline(String input) throws HenryException {
-        String taskDetails = extractArguments(input, CommandType.DEADLINE);
+        String taskDetails = extractArguments(input);
         int bySeparatorIndex = taskDetails.indexOf(DEADLINE_SEPARATOR);
         if (bySeparatorIndex < 0) {
             throw new HenryException(
@@ -136,7 +136,7 @@ public class Parser {
     }
 
     private static Event parseEvent(String input) throws HenryException {
-        String taskDetails = extractArguments(input, CommandType.EVENT);
+        String taskDetails = extractArguments(input);
         int fromSeparatorIndex = taskDetails.indexOf(EVENT_START_SEPARATOR);
         if (fromSeparatorIndex < 0) {
             throw new HenryException(
@@ -166,7 +166,11 @@ public class Parser {
         return new Event(description, from, to);
     }
 
-    private static String extractArguments(String input, CommandType commandType) {
-        return input.substring(commandType.getCommandWord().length()).trim();
+    private static String extractArguments(String input) {
+        int commandEndIndex = input.indexOf(' ');
+        if (commandEndIndex < 0) {
+            return "";
+        }
+        return input.substring(commandEndIndex + 1).trim();
     }
 }

@@ -22,6 +22,26 @@ Henry displays the deadline in a more readable form:
 [D][ ] return book (by: Dec 2 2019 6:00 PM)
 ```
 
+## Using command aliases
+
+Henry accepts the following shorter aliases for its commands:
+
+| Command | Alias |
+| --- | --- |
+| `todo` | `t` |
+| `deadline` | `d` |
+| `event` | `e` |
+| `list` | `l` |
+| `find` | `f` |
+| `mark` | `m` |
+| `unmark` | `u` |
+| `delete` | `del` |
+| `bye` | `b` |
+
+Aliases use the same arguments as the full commands. For example, `t borrow book` works like
+`todo borrow book`, and `m 1` works like `mark 1`. Aliases are lowercase and must be entered as a
+complete first word.
+
 ## Feature ABC
 
 // Feature details
