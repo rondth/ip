@@ -4,29 +4,32 @@ package henry.parser;
  * Represents a command that Henry can recognise.
  */
 public enum CommandType {
-    BYE("bye", false),
-    LIST("list", false),
-    MARK("mark", true),
-    UNMARK("unmark", true),
-    DELETE("delete", true),
-    FIND("find", true),
-    TODO("todo", true),
-    DEADLINE("deadline", true),
-    EVENT("event", true),
+    BYE("bye", false, "b"),
+    LIST("list", false, "l"),
+    MARK("mark", true, "m"),
+    UNMARK("unmark", true, "u"),
+    DELETE("delete", true, "del"),
+    FIND("find", true, "f"),
+    TODO("todo", true, "t"),
+    DEADLINE("deadline", true, "d"),
+    EVENT("event", true, "e"),
     UNKNOWN("", false);
 
     private final String commandWord;
     private final boolean acceptsArguments;
+    private final String[] aliases;
 
     /**
      * Creates a command type with its user-facing command word.
      *
      * @param commandWord word that identifies the command.
      * @param acceptsArguments whether text may follow the command word.
+     * @param aliases shorter words that also identify the command.
      */
-    CommandType(String commandWord, boolean acceptsArguments) {
+    CommandType(String commandWord, boolean acceptsArguments, String... aliases) {
         this.commandWord = commandWord;
         this.acceptsArguments = acceptsArguments;
+        this.aliases = aliases;
     }
 
     /**
@@ -50,13 +53,22 @@ public enum CommandType {
                 continue;
             }
 
-            boolean isExactMatch = input.equals(type.commandWord);
-            boolean hasArguments = type.acceptsArguments
-                    && input.startsWith(type.commandWord + " ");
-            if (isExactMatch || hasArguments) {
+            if (type.matches(input, type.commandWord)) {
                 return type;
+            }
+            for (String alias : type.aliases) {
+                if (type.matches(input, alias)) {
+                    return type;
+                }
             }
         }
         return UNKNOWN;
+    }
+
+    private boolean matches(String input, String commandIdentifier) {
+        boolean isExactMatch = input.equals(commandIdentifier);
+        boolean hasArguments = acceptsArguments
+                && input.startsWith(commandIdentifier + " ");
+        return isExactMatch || hasArguments;
     }
 }

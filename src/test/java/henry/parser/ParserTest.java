@@ -39,11 +39,31 @@ public class ParserTest {
     }
 
     @Test
+    public void parseCommandType_aliases_returnsMatchingTypes() {
+        assertEquals(CommandType.BYE, Parser.parseCommandType("b"));
+        assertEquals(CommandType.LIST, Parser.parseCommandType("l"));
+        assertEquals(CommandType.MARK, Parser.parseCommandType("m 1"));
+        assertEquals(CommandType.UNMARK, Parser.parseCommandType("u 1"));
+        assertEquals(CommandType.DELETE, Parser.parseCommandType("del 1"));
+        assertEquals(CommandType.FIND, Parser.parseCommandType("f book"));
+        assertEquals(CommandType.TODO, Parser.parseCommandType("t read book"));
+        assertEquals(CommandType.DEADLINE,
+                Parser.parseCommandType("d submit report /by 2019-12-02"));
+        assertEquals(CommandType.EVENT,
+                Parser.parseCommandType("e meeting /from 2pm /to 3pm"));
+    }
+
+    @Test
     public void parseCommandType_unknownOrMalformedCommand_returnsUnknown() {
         assertEquals(CommandType.UNKNOWN, Parser.parseCommandType(""));
         assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("dance"));
         assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("todoist"));
         assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("bye now"));
+        assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("T read book"));
+        assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("tread book"));
+        assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("deluxe 1"));
+        assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("b now"));
+        assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("l extra"));
     }
 
     @Test
@@ -58,7 +78,7 @@ public class ParserTest {
 
     @Test
     public void parseTaskIndex_extraWhitespace_returnsZeroBasedIndex() throws HenryException {
-        assertEquals(1, Parser.parseTaskIndex("unmark   2  ", CommandType.UNMARK, 3));
+        assertEquals(1, Parser.parseTaskIndex("u   2  ", CommandType.UNMARK, 3));
     }
 
     @Test
@@ -103,7 +123,7 @@ public class ParserTest {
 
     @Test
     public void parseKeyword_keywordProvided_returnsKeyword() throws HenryException {
-        assertEquals("read book", Parser.parseKeyword("find   read book  "));
+        assertEquals("read book", Parser.parseKeyword("f   read book  "));
     }
 
     @Test
@@ -116,7 +136,7 @@ public class ParserTest {
 
     @Test
     public void parseTask_todoWithDescription_returnsTodo() throws HenryException {
-        Task task = Parser.parseTask("todo read a book", CommandType.TODO);
+        Task task = Parser.parseTask("t read a book", CommandType.TODO);
 
         assertInstanceOf(Todo.class, task);
         assertEquals("T | 0 | read a book", task.toFileString());
