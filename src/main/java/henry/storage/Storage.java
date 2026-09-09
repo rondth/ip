@@ -86,10 +86,9 @@ public class Storage {
         Path parentDirectory = filePath.toAbsolutePath().getParent();
         Files.createDirectories(parentDirectory);
 
-        List<String> taskLines = new ArrayList<>();
-        for (Task task : tasks) {
-            taskLines.add(task.toFileString());
-        }
+        List<String> taskLines = tasks.stream()
+                .map(Task::toFileString)
+                .toList();
 
         Path temporaryFile = Files.createTempFile(parentDirectory, "henry-", ".tmp");
         try {
