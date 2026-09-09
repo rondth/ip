@@ -135,11 +135,16 @@ public class Henry {
     }
 
     private String addTask(Task task) throws IOException {
+        int originalTaskCount = tasks.size();
         tasks.add(task);
+        assert tasks.size() == originalTaskCount + 1
+                : "Adding a task should increase the task count by one";
         try {
             storage.save(tasks.asList());
         } catch (IOException e) {
             tasks.delete(tasks.size() - 1);
+            assert tasks.size() == originalTaskCount
+                    : "A failed addition should restore the original task count";
             throw e;
         }
         return " Got it. I've added this task:\n   " + task
@@ -148,11 +153,16 @@ public class Henry {
 
     private String deleteTask(String command) throws HenryException, IOException {
         int taskIndex = Parser.parseTaskIndex(command, CommandType.DELETE, tasks.size());
+        int originalTaskCount = tasks.size();
         Task removedTask = tasks.delete(taskIndex);
+        assert tasks.size() == originalTaskCount - 1
+                : "Deleting a task should reduce the task count by one";
         try {
             storage.save(tasks.asList());
         } catch (IOException e) {
             tasks.add(taskIndex, removedTask);
+            assert tasks.size() == originalTaskCount
+                    : "A failed deletion should restore the original task count";
             throw e;
         }
         return " Noted. I've removed this task:\n   " + removedTask
@@ -169,6 +179,8 @@ public class Henry {
         } else {
             tasks.unmark(taskIndex);
         }
+        assert task.isDone() == isDone
+                : "Updating a task should apply the requested completion status";
 
         try {
             storage.save(tasks.asList());
@@ -178,6 +190,8 @@ public class Henry {
             } else {
                 tasks.unmark(taskIndex);
             }
+            assert task.isDone() == wasDone
+                    : "A failed status update should restore the original status";
             throw e;
         }
 
