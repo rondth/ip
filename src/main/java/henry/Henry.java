@@ -135,12 +135,7 @@ public class Henry {
 
     private String addTask(Task task) throws IOException {
         tasks.add(task);
-        try {
-            storage.save(tasks.asList());
-        } catch (IOException e) {
-            tasks.delete(tasks.size() - 1);
-            throw e;
-        }
+        saveOrRollback(() -> tasks.delete(tasks.size() - 1));
         return " Got it. I've added this task:\n   " + task
                 + "\n Now you have " + tasks.size() + " tasks in the list.";
     }
@@ -148,12 +143,7 @@ public class Henry {
     private String deleteTask(String command) throws HenryException, IOException {
         int taskIndex = Parser.parseTaskIndex(command, CommandType.DELETE, tasks.size());
         Task removedTask = tasks.delete(taskIndex);
-        try {
-            storage.save(tasks.asList());
-        } catch (IOException e) {
-            tasks.add(taskIndex, removedTask);
-            throw e;
-        }
+        saveOrRollback(() -> tasks.add(taskIndex, removedTask));
         return " Noted. I've removed this task:\n   " + removedTask
                 + "\n Now you have " + tasks.size() + " tasks in the list.";
     }
@@ -165,18 +155,21 @@ public class Henry {
         boolean wasDone = task.isDone();
         boolean isDone = commandType == CommandType.MARK;
         tasks.setDone(taskIndex, isDone);
-
-        try {
-            storage.save(tasks.asList());
-        } catch (IOException e) {
-            tasks.setDone(taskIndex, wasDone);
-            throw e;
-        }
+        saveOrRollback(() -> tasks.setDone(taskIndex, wasDone));
 
         if (isDone) {
             return " Nice! I've marked this task as done:\n   " + task;
         }
         return " OK, I've marked this task as not done yet:\n   " + task;
+    }
+
+    private void saveOrRollback(Runnable rollbackAction) throws IOException {
+        try {
+            storage.save(tasks.asList());
+        } catch (IOException e) {
+            rollbackAction.run();
+            throw e;
+        }
     }
 
     private static String formatTaskList(String heading, List<Task> displayedTasks) {
