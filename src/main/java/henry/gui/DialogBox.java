@@ -15,6 +15,9 @@ import javafx.scene.layout.HBox;
  * Represents one chat message together with the speaker's avatar.
  */
 public class DialogBox extends HBox {
+    private static final double HENRY_DIALOG_HORIZONTAL_SPACE = 52.0;
+    private static final double USER_DIALOG_WIDTH_RATIO = 0.78;
+
     @FXML
     private Label dialog;
     @FXML
@@ -43,7 +46,10 @@ public class DialogBox extends HBox {
      * @return user dialog box.
      */
     public static DialogBox createUserDialog(String text, Image image) {
-        return new DialogBox(text, image);
+        DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.dialog.maxWidthProperty().bind(
+                dialogBox.widthProperty().multiply(USER_DIALOG_WIDTH_RATIO));
+        return dialogBox;
     }
 
     /**
@@ -56,6 +62,8 @@ public class DialogBox extends HBox {
      */
     public static DialogBox createHenryDialog(String text, Image image, CommandType commandType) {
         DialogBox dialogBox = new DialogBox(text, image);
+        dialogBox.dialog.maxWidthProperty().bind(
+                dialogBox.widthProperty().subtract(HENRY_DIALOG_HORIZONTAL_SPACE));
         dialogBox.flip();
         dialogBox.changeDialogStyle(commandType);
         return dialogBox;
