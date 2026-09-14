@@ -17,7 +17,7 @@ import henry.ui.Ui;
  */
 public class Henry {
     private static final Path DEFAULT_DATA_FILE_PATH = Path.of("data", "henry.txt");
-    private static final String GOODBYE_MESSAGE = "Bye. Hope to see you again soon!";
+    private static final String GOODBYE_MESSAGE = "That's all for now. Take care!";
 
     private final Storage storage;
     private final TaskList tasks;
@@ -47,14 +47,14 @@ public class Henry {
             loadedTasks = new TaskList(result.tasks());
             if (result.skippedLineCount() > 0) {
                 int skippedLineCount = result.skippedLineCount();
-                String recordLabel = skippedLineCount == 1 ? "record was" : "records were";
-                loadingMessage = "Warning: " + skippedLineCount + " malformed task "
-                        + recordLabel + " skipped while loading " + dataFilePath + ".";
+                String recordLabel = skippedLineCount == 1 ? "record" : "records";
+                loadingMessage = "I skipped " + skippedLineCount + " malformed task "
+                        + recordLabel + " while loading " + dataFilePath + ".";
             }
         } catch (IOException e) {
             loadedTasks = new TaskList();
-            loadingMessage = "I couldn't load tasks from " + dataFilePath
-                    + ". Starting with an empty task list.";
+            loadingMessage = "I couldn't load your saved tasks, so we're starting with an empty "
+                    + "list.";
         }
         tasks = loadedTasks;
         startupMessage = loadingMessage;
@@ -115,37 +115,37 @@ public class Henry {
         try {
             return switch (commandType) {
                 case BYE -> GOODBYE_MESSAGE;
-                case LIST -> formatTaskList(" Here are the tasks in your list:", tasks.asList());
-                case FIND -> formatTaskList(" Here are the matching tasks in your list:",
+                case LIST -> formatTaskList("Here's what's ahead:", tasks.asList());
+                case FIND -> formatTaskList("I found these matching tasks:",
                         tasks.find(Parser.parseKeyword(command)));
                 case MARK, UNMARK -> updateTaskStatus(command, commandType);
                 case DELETE -> deleteTask(command);
                 case TODO, DEADLINE, EVENT -> addTask(
                         Parser.parseTask(command, commandType));
                 case UNKNOWN -> throw new HenryException(
-                        "I don't recognise that command. Try todo, deadline, event, list, find, "
+                        "I'm not quite sure what you mean. Try todo, deadline, event, list, find, "
                                 + "mark, unmark, delete, or bye.");
             };
         } catch (HenryException e) {
             return e.getMessage();
         } catch (IOException e) {
-            return "I couldn't save your tasks. Your last change was not applied.";
+            return "I couldn't save that change. Your task list is unchanged.";
         }
     }
 
     private String addTask(Task task) throws IOException {
         tasks.add(task);
         saveOrRollback(() -> tasks.delete(tasks.size() - 1));
-        return " Got it. I've added this task:\n   " + task
-                + "\n Now you have " + tasks.size() + " tasks in the list.";
+        return "Got it. I've added this to our route:\n" + task
+                + "\n" + formatTaskCount();
     }
 
     private String deleteTask(String command) throws HenryException, IOException {
         int taskIndex = Parser.parseTaskIndex(command, CommandType.DELETE, tasks.size());
         Task removedTask = tasks.delete(taskIndex);
         saveOrRollback(() -> tasks.add(taskIndex, removedTask));
-        return " Noted. I've removed this task:\n   " + removedTask
-                + "\n Now you have " + tasks.size() + " tasks in the list.";
+        return "All right, I've cleared this from the list:\n" + removedTask
+                + "\n" + formatTaskCount();
     }
 
     private String updateTaskStatus(String command, CommandType commandType)
@@ -158,9 +158,14 @@ public class Henry {
         saveOrRollback(() -> tasks.setDone(taskIndex, wasDone));
 
         if (isDone) {
-            return " Nice! I've marked this task as done:\n   " + task;
+            return "Nice, that one's done.\n" + task;
         }
-        return " OK, I've marked this task as not done yet:\n   " + task;
+        return "No worries. I've put this back on the trail:\n" + task;
+    }
+
+    private String formatTaskCount() {
+        String taskLabel = tasks.size() == 1 ? "task" : "tasks";
+        return "You now have " + tasks.size() + " " + taskLabel + " on the list.";
     }
 
     private void saveOrRollback(Runnable rollbackAction) throws IOException {
@@ -175,7 +180,7 @@ public class Henry {
     private static String formatTaskList(String heading, List<Task> displayedTasks) {
         StringBuilder response = new StringBuilder(heading);
         for (int i = 0; i < displayedTasks.size(); i++) {
-            response.append("\n ").append(i + 1).append(".").append(displayedTasks.get(i));
+            response.append("\n").append(i + 1).append(". ").append(displayedTasks.get(i));
         }
         return response.toString();
     }

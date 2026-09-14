@@ -86,7 +86,8 @@ public class ParserTest {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseTaskIndex("mark", CommandType.MARK, 3));
 
-        assertEquals("Please specify a task number. For example: mark 1", exception.getMessage());
+        assertEquals("I'll need a task number for that. For example: mark 1",
+                exception.getMessage());
     }
 
     @Test
@@ -94,7 +95,7 @@ public class ParserTest {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseTaskIndex("delete two", CommandType.DELETE, 3));
 
-        assertEquals("'two' is not a valid task number.", exception.getMessage());
+        assertEquals("'two' isn't a valid task number.", exception.getMessage());
     }
 
     @Test
@@ -102,7 +103,7 @@ public class ParserTest {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseTaskIndex("mark 1", CommandType.MARK, 0));
 
-        assertEquals("There are no tasks to mark yet.", exception.getMessage());
+        assertEquals("There aren't any tasks to mark yet.", exception.getMessage());
     }
 
     @Test
@@ -110,7 +111,7 @@ public class ParserTest {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseTaskIndex("mark 0", CommandType.MARK, 3));
 
-        assertEquals("Task 0 does not exist. Choose a number from 1 to 3.", exception.getMessage());
+        assertEquals("I can't find task 0. Choose a number from 1 to 3.", exception.getMessage());
     }
 
     @Test
@@ -118,7 +119,7 @@ public class ParserTest {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseTaskIndex("delete 4", CommandType.DELETE, 3));
 
-        assertEquals("Task 4 does not exist. Choose a number from 1 to 3.", exception.getMessage());
+        assertEquals("I can't find task 4. Choose a number from 1 to 3.", exception.getMessage());
     }
 
     @Test
@@ -131,7 +132,8 @@ public class ParserTest {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseKeyword("find"));
 
-        assertEquals("Please specify a keyword. For example: find book", exception.getMessage());
+        assertEquals("I'll need a keyword for that. For example: find book",
+                exception.getMessage());
     }
 
     @Test
@@ -147,7 +149,7 @@ public class ParserTest {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseTask("todo", CommandType.TODO));
 
-        assertEquals("A todo needs a description. For example: todo borrow a book",
+        assertEquals("I'll need a description for that. For example: todo borrow a book",
                 exception.getMessage());
     }
 

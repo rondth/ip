@@ -1,36 +1,40 @@
 .root {
-    -fx-background-color: #f4f6f8;
+    -fx-background-color: #f5f1e8;
     -fx-font-family: "System";
     -fx-font-size: 14px;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
 }
 
 .input-bar {
-    -fx-background-color: #ffffff;
-    -fx-border-color: #d8dee8 transparent transparent transparent;
+    -fx-background-color: #fffaf0;
+    -fx-border-color: #d8cdb8 transparent transparent transparent;
     -fx-border-width: 1px 0 0 0;
     -fx-padding: 10px 12px;
     -fx-spacing: 8px;
 }
 
 .text-field {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #fffdf7;
     -fx-background-insets: 0;
     -fx-background-radius: 8px;
-    -fx-border-color: #cbd5e1;
+    -fx-border-color: #b9aa8f;
     -fx-border-radius: 8px;
     -fx-border-width: 1px;
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
     -fx-padding: 9px 12px;
-    -fx-prompt-text-fill: #94a3b8;
-    -fx-text-fill: #1f2937;
+    -fx-prompt-text-fill: #827563;
+    -fx-text-fill: #28352f;
 }
 
 .text-field:focused {
-    -fx-border-color: #2563eb;
-    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.18), 6, 0.2, 0, 0);
+    -fx-border-color: #3f654f;
+    -fx-effect: dropshadow(gaussian, rgba(63, 101, 79, 0.20), 6, 0.2, 0, 0);
 }
 
 .button {
-    -fx-background-color: #2563eb;
+    -fx-background-color: #3f654f;
     -fx-background-insets: 0;
     -fx-background-radius: 8px;
     -fx-cursor: hand;
@@ -41,20 +45,20 @@
 }
 
 .button:hover {
-    -fx-background-color: #1d4ed8;
+    -fx-background-color: #31513f;
 }
 
 .button:pressed {
-    -fx-background-color: #1e40af;
+    -fx-background-color: #274234;
 }
 
 .button:focused {
-    -fx-effect: dropshadow(gaussian, rgba(37, 99, 235, 0.28), 7, 0.2, 0, 0);
+    -fx-effect: dropshadow(gaussian, rgba(63, 101, 79, 0.30), 7, 0.2, 0, 0);
 }
 
 .scroll-pane,
 .scroll-pane .viewport {
-    -fx-background-color: #f4f6f8;
+    -fx-background-color: #f5f1e8;
 }
 
 .scroll-pane {
@@ -64,9 +68,9 @@
 }
 
 #dialogContainer {
-    -fx-background-color: #f4f6f8;
-    -fx-padding: 16px;
-    -fx-spacing: 10px;
+    -fx-background-color: #f5f1e8;
+    -fx-padding: 14px;
+    -fx-spacing: 8px;
 }
 
 .scroll-bar {
@@ -75,7 +79,7 @@
 }
 
 .scroll-bar .thumb {
-    -fx-background-color: #b6c0ce;
+    -fx-background-color: #aa9a80;
     -fx-background-insets: 2px;
     -fx-background-radius: 8px;
 }

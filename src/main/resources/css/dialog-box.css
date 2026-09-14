@@ -1,38 +1,42 @@
 .dialog-row {
-    -fx-padding: 2px 0;
-    -fx-spacing: 8px;
+    -fx-padding: 1px 0;
+    -fx-spacing: 10px;
 }
 
 .dialog-label {
-    -fx-background-color: #dceaff;
+    -fx-background-color: #e3d4bd;
     -fx-background-radius: 12px 12px 4px 12px;
-    -fx-padding: 10px 12px;
-    -fx-text-fill: #1f2937;
+    -fx-font-family: "System";
+    -fx-font-style: normal;
+    -fx-font-weight: normal;
+    -fx-line-spacing: 2px;
+    -fx-padding: 9px 12px;
+    -fx-text-fill: #28352f;
 }
 
 .reply-label {
-    -fx-background-color: #ffffff;
+    -fx-background-color: #fffaf0;
     -fx-background-radius: 12px 12px 12px 4px;
-    -fx-border-color: #d8dee8;
+    -fx-border-color: #d8cdb8;
     -fx-border-radius: 12px 12px 12px 4px;
     -fx-border-width: 1px;
 }
 
 .add-label {
-    -fx-background-color: #f0fdf4;
-    -fx-border-color: #bbf7d0;
+    -fx-background-color: #edf4e8;
+    -fx-border-color: #b5c8a6;
 }
 
 .marked-label {
-    -fx-background-color: #eff6ff;
-    -fx-border-color: #bfdbfe;
+    -fx-background-color: #e7f0e9;
+    -fx-border-color: #9fbea7;
 }
 
 .delete-label {
-    -fx-background-color: #fff1f2;
-    -fx-border-color: #fecdd3;
+    -fx-background-color: #f8ebe3;
+    -fx-border-color: #c98c68;
 }
 
 #displayPicture {
-    -fx-effect: dropshadow(gaussian, rgba(15, 23, 42, 0.18), 5, 0.2, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(40, 53, 47, 0.24), 5, 0.2, 0, 1);
 }

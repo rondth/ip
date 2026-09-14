@@ -32,8 +32,7 @@ public class Ui {
     public void showWelcome() {
         System.out.println(SEPARATOR);
         System.out.print(BANNER);
-        System.out.println("Hello! I'm Henry.");
-        System.out.println("What can I do for you?");
+        System.out.println("Hey, I'm Henry. What are we tackling today?");
         System.out.println(SEPARATOR);
     }
 

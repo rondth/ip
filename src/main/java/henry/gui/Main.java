@@ -22,7 +22,7 @@ public class Main extends Application {
         Scene scene = new Scene(root);
 
         stage.setScene(scene);
-        stage.setTitle("Henry");
+        stage.setTitle("Henry, your chatbot companion");
         stage.setMinHeight(320);
         stage.setMinWidth(360);
         fxmlLoader.<MainWindow>getController().setHenry(henry);
