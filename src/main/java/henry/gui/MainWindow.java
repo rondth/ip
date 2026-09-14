@@ -15,7 +15,7 @@ public class MainWindow {
     private final Image userImage = new Image(
             this.getClass().getResourceAsStream("/images/DaUser.png"));
     private final Image henryImage = new Image(
-            this.getClass().getResourceAsStream("/images/DaHenry.png"));
+            this.getClass().getResourceAsStream("/images/HenryCow.png"));
 
     @FXML
     private ScrollPane scrollPane;
