@@ -45,22 +45,22 @@ public class Parser {
         String argument = extractArguments(input);
         if (argument.isEmpty()) {
             throw new HenryException(
-                    "Please specify a task number. For example: " + commandWord + " 1");
+                    "I'll need a task number for that. For example: " + commandWord + " 1");
         }
 
         final int taskNumber;
         try {
             taskNumber = Integer.parseInt(argument);
         } catch (NumberFormatException e) {
-            throw new HenryException("'" + argument + "' is not a valid task number.");
+            throw new HenryException("'" + argument + "' isn't a valid task number.");
         }
 
         if (taskCount == 0) {
-            throw new HenryException("There are no tasks to " + commandWord + " yet.");
+            throw new HenryException("There aren't any tasks to " + commandWord + " yet.");
         }
         if (taskNumber < 1 || taskNumber > taskCount) {
             throw new HenryException(
-                    "Task " + taskNumber + " does not exist. Choose a number from 1 to "
+                    "I can't find task " + taskNumber + ". Choose a number from 1 to "
                             + taskCount + ".");
         }
         return taskNumber - 1;
@@ -76,8 +76,7 @@ public class Parser {
     public static String parseKeyword(String input) throws HenryException {
         String keyword = extractArguments(input);
         if (keyword.isEmpty()) {
-            throw new HenryException(
-                    "Please specify a keyword. For example: find book");
+            throw new HenryException("I'll need a keyword for that. For example: find book");
         }
         return keyword;
     }
@@ -103,7 +102,7 @@ public class Parser {
         String description = extractArguments(input);
         if (description.isEmpty()) {
             throw new HenryException(
-                    "A todo needs a description. For example: todo borrow a book");
+                    "I'll need a description for that. For example: todo borrow a book");
         }
         return new Todo(description);
     }

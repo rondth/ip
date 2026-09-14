@@ -25,11 +25,11 @@ public class HenryTest {
         String addResponse = henry.getResponse("todo borrow book");
         String listResponse = henry.getResponse("list");
 
-        assertEquals(" Got it. I've added this task:\n"
-                + "   [T][ ] borrow book\n"
-                + " Now you have 1 tasks in the list.", addResponse);
-        assertEquals(" Here are the tasks in your list:\n"
-                + " 1.[T][ ] borrow book", listResponse);
+        assertEquals("Got it. I've added this to our route:\n"
+                + "[T][ ] borrow book\n"
+                + "You now have 1 task on the list.", addResponse);
+        assertEquals("Here's what's ahead:\n"
+                + "1. [T][ ] borrow book", listResponse);
         assertEquals(CommandType.LIST, henry.getLastCommandType());
     }
 
@@ -41,13 +41,13 @@ public class HenryTest {
         String markResponse = henry.getResponse("m 1");
         String listResponse = henry.getResponse("l");
 
-        assertEquals(" Got it. I've added this task:\n"
-                + "   [T][ ] borrow book\n"
-                + " Now you have 1 tasks in the list.", addResponse);
-        assertEquals(" Nice! I've marked this task as done:\n"
-                + "   [T][X] borrow book", markResponse);
-        assertEquals(" Here are the tasks in your list:\n"
-                + " 1.[T][X] borrow book", listResponse);
+        assertEquals("Got it. I've added this to our route:\n"
+                + "[T][ ] borrow book\n"
+                + "You now have 1 task on the list.", addResponse);
+        assertEquals("Nice, that one's done.\n"
+                + "[T][X] borrow book", markResponse);
+        assertEquals("Here's what's ahead:\n"
+                + "1. [T][X] borrow book", listResponse);
         assertEquals(CommandType.LIST, henry.getLastCommandType());
     }
 
@@ -57,9 +57,20 @@ public class HenryTest {
 
         String response = henry.getResponse("dance");
 
-        assertEquals("I don't recognise that command. Try todo, deadline, event, list, find, "
+        assertEquals("I'm not quite sure what you mean. Try todo, deadline, event, list, find, "
                 + "mark, unmark, delete, or bye.", response);
         assertEquals(CommandType.UNKNOWN, henry.getLastCommandType());
+    }
+
+    @Test
+    public void getStartupMessage_malformedRecords_reportsSkippedRecordCount() throws IOException {
+        Path dataFile = temporaryDirectory.resolve("henry.txt");
+        Files.writeString(dataFile, "invalid record\nalso invalid\n");
+
+        Henry henry = new Henry(dataFile);
+
+        assertEquals("I skipped 2 malformed task records while loading " + dataFile + ".",
+                henry.getStartupMessage());
     }
 
     @Test
@@ -75,11 +86,11 @@ public class HenryTest {
         String deleteResponse = henry.getResponse("delete 1");
         String listResponse = henry.getResponse("list");
 
-        String saveError = "I couldn't save your tasks. Your last change was not applied.";
+        String saveError = "I couldn't save that change. Your task list is unchanged.";
         assertEquals(saveError, addResponse);
         assertEquals(saveError, markResponse);
         assertEquals(saveError, deleteResponse);
-        assertEquals(" Here are the tasks in your list:\n"
-                + " 1.[T][ ] existing task", listResponse);
+        assertEquals("Here's what's ahead:\n"
+                + "1. [T][ ] existing task", listResponse);
     }
 }

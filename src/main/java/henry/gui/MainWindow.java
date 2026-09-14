@@ -64,7 +64,7 @@ public class MainWindow {
     }
 
     private String createGreeting() {
-        String greeting = "Hello! I'm Henry.\nWhat can I do for you?";
+        String greeting = "Hey, I'm Henry.\nWhat are we tackling today?";
         if (henry.getStartupMessage().isEmpty()) {
             return greeting;
         }
