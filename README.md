@@ -1,45 +1,269 @@
 # Henry
 
-Henry is a chatbot built as a greenfield Java project. Given below are instructions on how to use it.
+**Henry** is a friendly desktop chatbot that helps you create, track, search, and complete tasks
+using simple text commands.
 
-## Setting up in Intellij
+## User Guide
 
-Prerequisites: JDK 25, update Intellij to the most recent version.
+### Quick start
 
-1. Open Intellij (if you are not in the welcome screen, click `File` > `Close Project` to close the existing project first)
-1. Open the project into Intellij as follows:
-   1. Click `Open`.
-   1. Select the project directory, and click `OK`.
-   1. If there are any further prompts, accept the defaults.
-1. Configure the project to use **JDK 25** (not other versions) as explained in [here](https://www.jetbrains.com/help/idea/sdk.html#set-up-jdk).<br>
-   In the same dialog, set the **Project language level** field to the `SDK default` option.
-1. After that, locate `src/main/java/henry/gui/Launcher.java`, right-click it, and choose
-   `Run Launcher.main()`. Henry's chat window should open. If the code editor is showing compile
-   errors, try restarting the IDE.
+1. Ensure that Java 25 is installed.
+2. Open a terminal in the project folder.
+3. Start Henry:
 
-You can also start the GUI from the project root with:
+   ```shell
+   ./gradlew run
+   ```
 
-```shell
-./gradlew run
+   On Windows, use:
+
+   ```shell
+   gradlew.bat run
+   ```
+
+4. Type a command into the message box.
+5. Press <kbd>Enter</kbd> or click **Send**.
+
+> [!IMPORTANT]
+> Commands and their aliases must be entered in lowercase.
+
+### Understanding your task list
+
+Henry supports three types of tasks:
+
+| Symbol | Task type | Meaning |
+| --- | --- | --- |
+| `[T]` | Todo | A task without a date or time |
+| `[D]` | Deadline | A task that must be completed by a certain date or time |
+| `[E]` | Event | A task that takes place between a start and end time |
+
+The completion symbol shows whether a task is finished:
+
+- `[ ]` means the task is not completed.
+- `[X]` means the task is completed.
+
+## Features
+
+### Adding a todo: `todo`
+
+Adds a task without a date or time.
+
+**Format:** `todo DESCRIPTION`
+
+**Example:**
+
+```text
+todo borrow a book
 ```
 
-On Windows, use `gradlew.bat run` instead.
+Henry adds the following task:
 
-**Warning:** Keep the `src\main\java` folder as the root folder for Java files (i.e., don't rename those folders or move Java files to another folder outside of this folder path), as this is the default location some tools (e.g., Gradle) expect to find Java files.
+```text
+[T][ ] borrow a book
+```
 
-## Creating and running a fat JAR
+Short form: `t borrow a book`
 
-A fat JAR contains Henry's compiled classes together with its runtime dependencies, so it can be run without separately adding those dependencies to the classpath.
+### Adding a deadline: `deadline`
 
-From the project root, create the fat JAR with:
+Adds a task that must be completed by a particular date or time.
+
+**Format:** `deadline DESCRIPTION /by DATE`
+
+Henry accepts these date formats:
+
+- `d/M/yyyy HHmm`, such as `2/12/2019 1800`
+- `yyyy-MM-dd`, such as `2019-12-02`
+
+A deadline without a time is set to the start of that day.
+
+**Example:**
+
+```text
+deadline submit report /by 2/12/2019 1800
+```
+
+Henry displays:
+
+```text
+[D][ ] submit report (by: Dec 2 2019 6:00 PM)
+```
+
+Short form: `d submit report /by 2/12/2019 1800`
+
+### Adding an event: `event`
+
+Adds a task with a start and end time.
+
+**Format:** `event DESCRIPTION /from START /to END`
+
+**Example:**
+
+```text
+event project meeting /from Monday 2pm /to 4pm
+```
+
+Henry displays:
+
+```text
+[E][ ] project meeting (from: Monday 2pm to: 4pm)
+```
+
+Short form: `e project meeting /from Monday 2pm /to 4pm`
+
+### Viewing all tasks: `list`
+
+Shows every task and its current task number.
+
+**Format:** `list`
+
+**Example:**
+
+```text
+list
+```
+
+Henry displays:
+
+```text
+1. [T][ ] borrow a book
+2. [D][X] submit report (by: Dec 2 2019 6:00 PM)
+```
+
+Short form: `l`
+
+### Finding tasks: `find`
+
+Finds tasks whose descriptions contain the given keyword.
+
+**Format:** `find KEYWORD`
+
+**Example:**
+
+```text
+find book
+```
+
+Short form: `f book`
+
+> [!NOTE]
+> Searching is case-sensitive. Search results are numbered for display, so use `list` to check a
+> task's current number before marking, unmarking, or deleting it.
+
+### Marking a task as completed: `mark`
+
+Marks a task as completed using its number from `list`.
+
+**Format:** `mark TASK_NUMBER`
+
+**Example:**
+
+```text
+mark 2
+```
+
+Short form: `m 2`
+
+### Marking a task as not completed: `unmark`
+
+Returns a completed task to the not-completed state.
+
+**Format:** `unmark TASK_NUMBER`
+
+**Example:**
+
+```text
+unmark 2
+```
+
+Short form: `u 2`
+
+### Deleting a task: `delete`
+
+Permanently removes a task using its number from `list`.
+
+**Format:** `delete TASK_NUMBER`
+
+**Example:**
+
+```text
+delete 1
+```
+
+The remaining tasks are renumbered automatically.
+
+Short form: `del 1`
+
+### Saying goodbye: `bye`
+
+Displays Henry's farewell message.
+
+**Format:** `bye`
+
+Short form: `b`
+
+When using the desktop interface, close the application window after you are finished.
+
+### Saving data
+
+Henry automatically saves your task list after you add, mark, unmark, or delete a task.
+
+Saved tasks are loaded again the next time Henry starts. By default, they are stored in:
+
+```text
+data/henry.txt
+```
+
+No manual save command is required.
+
+## Command summary
+
+| Action | Command format | Short form |
+| --- | --- | --- |
+| Add a todo | `todo DESCRIPTION` | `t DESCRIPTION` |
+| Add a deadline | `deadline DESCRIPTION /by DATE` | `d DESCRIPTION /by DATE` |
+| Add an event | `event DESCRIPTION /from START /to END` | `e DESCRIPTION /from START /to END` |
+| View all tasks | `list` | `l` |
+| Find tasks | `find KEYWORD` | `f KEYWORD` |
+| Mark a task | `mark TASK_NUMBER` | `m TASK_NUMBER` |
+| Unmark a task | `unmark TASK_NUMBER` | `u TASK_NUMBER` |
+| Delete a task | `delete TASK_NUMBER` | `del TASK_NUMBER` |
+| Say goodbye | `bye` | `b` |
+
+## Setting up Henry in IntelliJ IDEA
+
+Prerequisites: JDK 25 and a recent version of IntelliJ IDEA.
+
+1. Open IntelliJ IDEA.
+2. Select **Open** and choose the project directory.
+3. Configure the project to use **JDK 25**.
+4. Set the **Project language level** to **SDK default**.
+5. Open `src/main/java/henry/gui/Launcher.java`.
+6. Right-click the file and select **Run Launcher.main()**.
+
+Keep `src/main/java` as the root folder for Java source files.
+
+## Creating and running the JAR
+
+Create the executable JAR from the project root:
 
 ```shell
 ./gradlew shadowJar
 ```
 
-On Windows, use `gradlew.bat shadowJar` instead. The generated JAR is located at `build/libs/henry.jar`.
+On Windows, use:
 
-Run it from the project root with Java 25:
+```shell
+gradlew.bat shadowJar
+```
+
+The generated file is located at:
+
+```text
+build/libs/henry.jar
+```
+
+Run it using Java 25:
 
 ```shell
 java -jar build/libs/henry.jar
