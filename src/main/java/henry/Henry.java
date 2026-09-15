@@ -116,8 +116,7 @@ public class Henry {
             return switch (commandType) {
                 case BYE -> GOODBYE_MESSAGE;
                 case LIST -> formatTaskList("Here's what's ahead:", tasks.asList());
-                case FIND -> formatTaskList("I found these matching tasks:",
-                        tasks.find(Parser.parseKeyword(command)));
+                case FIND -> findTasks(command);
                 case MARK, UNMARK -> updateTaskStatus(command, commandType);
                 case DELETE -> deleteTask(command);
                 case TODO, DEADLINE, EVENT -> addTask(
@@ -146,6 +145,14 @@ public class Henry {
         saveOrRollback(() -> tasks.add(taskIndex, removedTask));
         return "All right, I've cleared this from the list:\n" + removedTask
                 + "\n" + formatTaskCount();
+    }
+
+    private String findTasks(String command) throws HenryException {
+        List<Task> matchingTasks = tasks.find(Parser.parseKeyword(command));
+        if (matchingTasks.isEmpty()) {
+            return "I couldn't find a task for that keyword";
+        }
+        return formatTaskList("I found these matching tasks:", matchingTasks);
     }
 
     private String updateTaskStatus(String command, CommandType commandType)

@@ -999,7 +999,7 @@ ____________________________________________________________
 #### Expected output after step 7
 
 ```text
-I found these matching tasks:
+I couldn't find a task for that keyword
 ____________________________________________________________
 ```
 

@@ -52,6 +52,17 @@ public class HenryTest {
     }
 
     @Test
+    public void getResponse_findWithNoMatches_returnsNotFoundMessage() {
+        Henry henry = new Henry(temporaryDirectory.resolve("henry.txt"));
+        henry.getResponse("todo borrow book");
+
+        String response = henry.getResponse("find movie");
+
+        assertEquals("I couldn't find a task for that keyword", response);
+        assertEquals(CommandType.FIND, henry.getLastCommandType());
+    }
+
+    @Test
     public void getResponse_invalidCommand_returnsErrorWithoutThrowing() {
         Henry henry = new Henry(temporaryDirectory.resolve("henry.txt"));
 

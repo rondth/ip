@@ -65,7 +65,7 @@ public class DialogBox extends HBox {
         dialogBox.dialog.maxWidthProperty().bind(
                 dialogBox.widthProperty().subtract(HENRY_DIALOG_HORIZONTAL_SPACE));
         dialogBox.flip();
-        dialogBox.changeDialogStyle(commandType);
+        dialogBox.changeDialogStyle(text, commandType);
         return dialogBox;
     }
 
@@ -75,7 +75,7 @@ public class DialogBox extends HBox {
         dialog.getStyleClass().add("reply-label");
     }
 
-    private void changeDialogStyle(CommandType commandType) {
+    private void changeDialogStyle(String text, CommandType commandType) {
         switch (commandType) {
             case TODO:
             case DEADLINE:
@@ -87,7 +87,13 @@ public class DialogBox extends HBox {
                 dialog.getStyleClass().add("marked-label");
                 break;
             case DELETE:
-                dialog.getStyleClass().add("delete-label");
+                dialog.getStyleClass().add("negative-label");
+                break;
+            case FIND:
+                String styleClass = text.startsWith("I found these matching tasks:")
+                        ? "find-label"
+                        : "negative-label";
+                dialog.getStyleClass().add(styleClass);
                 break;
             default:
                 break;
