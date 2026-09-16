@@ -2,7 +2,10 @@ package henry.gui;
 
 import henry.Henry;
 import henry.parser.CommandType;
+import javafx.application.Platform;
+import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
+import javafx.scene.control.Button;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -23,6 +26,8 @@ public class MainWindow {
     private VBox dialogContainer;
     @FXML
     private TextField userInput;
+    @FXML
+    private Button sendButton;
     private Henry henry;
 
     /**
@@ -32,6 +37,9 @@ public class MainWindow {
     public void initialize() {
         dialogContainer.heightProperty().addListener((observable, oldHeight, newHeight) ->
                 scrollPane.setVvalue(scrollPane.getVmax()));
+        sendButton.disableProperty().bind(Bindings.createBooleanBinding(() ->
+                userInput.getText().trim().isEmpty(), userInput.textProperty()));
+        Platform.runLater(userInput::requestFocus);
     }
 
     /**
@@ -61,6 +69,7 @@ public class MainWindow {
                 DialogBox.createUserDialog(input, userImage),
                 DialogBox.createHenryDialog(response, henryImage, commandType));
         userInput.clear();
+        userInput.requestFocus();
     }
 
     private String createGreeting() {

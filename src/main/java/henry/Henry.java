@@ -17,7 +17,7 @@ import henry.ui.Ui;
  */
 public class Henry {
     private static final Path DEFAULT_DATA_FILE_PATH = Path.of("data", "henry.txt");
-    private static final String GOODBYE_MESSAGE = "That's all for now. Take care!";
+    private static final String GOODBYE_MESSAGE = "That's all for now. Take care out there.";
 
     private final Storage storage;
     private final TaskList tasks;

@@ -4,44 +4,45 @@
 }
 
 .dialog-label {
-    -fx-background-color: #e3d4bd;
+    -fx-background-color: rgba(218, 190, 132, 0.96);
     -fx-background-radius: 12px 12px 4px 12px;
     -fx-font-family: "System";
     -fx-font-style: normal;
     -fx-font-weight: normal;
     -fx-line-spacing: 2px;
     -fx-padding: 9px 12px;
-    -fx-text-fill: #28352f;
+    -fx-effect: dropshadow(gaussian, rgba(43, 50, 30, 0.18), 5, 0.15, 0, 1);
+    -fx-text-fill: #263526;
 }
 
 .reply-label {
-    -fx-background-color: #fffaf0;
+    -fx-background-color: rgba(255, 250, 232, 0.96);
     -fx-background-radius: 12px 12px 12px 4px;
-    -fx-border-color: #d8cdb8;
+    -fx-border-color: #c8b483;
     -fx-border-radius: 12px 12px 12px 4px;
     -fx-border-width: 1px;
 }
 
 .add-label {
-    -fx-background-color: #edf4e8;
-    -fx-border-color: #b5c8a6;
+    -fx-background-color: rgba(229, 240, 214, 0.97);
+    -fx-border-color: #9bb27d;
 }
 
 .marked-label {
-    -fx-background-color: #e7f0e9;
-    -fx-border-color: #9fbea7;
+    -fx-background-color: rgba(210, 230, 208, 0.97);
+    -fx-border-color: #7fa180;
 }
 
 .find-label {
-    -fx-background-color: #dbeafe;
-    -fx-border-color: #60a5fa;
+    -fx-background-color: rgba(235, 239, 207, 0.97);
+    -fx-border-color: #a6ad67;
 }
 
 .negative-label {
-    -fx-background-color: #f8ebe3;
-    -fx-border-color: #c98c68;
+    -fx-background-color: rgba(248, 226, 210, 0.97);
+    -fx-border-color: #bd7c59;
 }
 
 #displayPicture {
-    -fx-effect: dropshadow(gaussian, rgba(40, 53, 47, 0.24), 5, 0.2, 0, 1);
+    -fx-effect: dropshadow(gaussian, rgba(32, 45, 28, 0.38), 6, 0.2, 0, 1);
 }

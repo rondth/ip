@@ -6,10 +6,12 @@ import henry.parser.CommandType;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.geometry.Pos;
+import javafx.geometry.Rectangle2D;
 import javafx.scene.control.Label;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.HBox;
+import javafx.scene.shape.Circle;
 
 /**
  * Represents one chat message together with the speaker's avatar.
@@ -35,7 +37,24 @@ public class DialogBox extends HBox {
         }
 
         dialog.setText(text);
+        configureDisplayPicture(image);
+    }
+
+    /**
+     * Crops an image from its center and clips it into a circular avatar.
+     *
+     * @param image image to display.
+     */
+    private void configureDisplayPicture(Image image) {
+        double cropSize = Math.min(image.getWidth(), image.getHeight());
+        double cropX = (image.getWidth() - cropSize) / 2;
+        double cropY = (image.getHeight() - cropSize) / 2;
+        double radius = Math.min(displayPicture.getFitWidth(), displayPicture.getFitHeight()) / 2;
+
         displayPicture.setImage(image);
+        displayPicture.setViewport(new Rectangle2D(cropX, cropY, cropSize, cropSize));
+        displayPicture.setPreserveRatio(false);
+        displayPicture.setClip(new Circle(radius, radius, radius));
     }
 
     /**

@@ -28,9 +28,10 @@
             <children>
                 <TextField fx:id="userInput"
                            onAction="#handleUserInput"
-                           promptText="What are we tackling?"
+                           promptText="What needs tending?"
                            HBox.hgrow="ALWAYS" />
-                <Button mnemonicParsing="false"
+                <Button fx:id="sendButton"
+                        mnemonicParsing="false"
                         onAction="#handleUserInput"
                         text="Send" />
             </children>
