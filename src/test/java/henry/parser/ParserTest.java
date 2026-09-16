@@ -7,6 +7,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 import org.junit.jupiter.api.Test;
 
 import henry.exception.HenryException;
+import henry.exception.InvalidDateException;
 import henry.task.Deadline;
 import henry.task.Event;
 import henry.task.Task;
@@ -137,7 +138,8 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTask_todoWithDescription_returnsTodo() throws HenryException {
+    public void parseTask_todoWithDescription_returnsTodo()
+            throws HenryException, InvalidDateException {
         Task task = Parser.parseTask("t read a book", CommandType.TODO);
 
         assertInstanceOf(Todo.class, task);
@@ -154,7 +156,8 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTask_validDeadline_returnsDeadline() throws HenryException {
+    public void parseTask_validDeadline_returnsDeadline()
+            throws HenryException, InvalidDateException {
         Task task = Parser.parseTask(
                 "deadline submit report /by 2/12/2019 1800", CommandType.DEADLINE);
 
@@ -188,7 +191,7 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTask_deadlineWithInvalidDate_exceptionThrown() {
+    public void parseTask_deadlineWithUnsupportedDateFormat_exceptionThrown() {
         HenryException exception = assertThrows(HenryException.class, () ->
                 Parser.parseTask(
                         "deadline submit report /by tomorrow", CommandType.DEADLINE));
@@ -198,7 +201,38 @@ public class ParserTest {
     }
 
     @Test
-    public void parseTask_validEvent_returnsEvent() throws HenryException {
+    public void parseTask_deadlineWithInvalidIsoDate_exceptionThrown() {
+        InvalidDateException exception = assertThrows(InvalidDateException.class, () ->
+                Parser.parseTask(
+                        "deadline submit report /by 2023-02-29", CommandType.DEADLINE));
+
+        assertEquals("That date is incorrect. Please enter a valid calendar date.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void parseTask_deadlineWithDateOutsideMonth_exceptionThrown() {
+        InvalidDateException exception = assertThrows(InvalidDateException.class, () ->
+                Parser.parseTask(
+                        "deadline submit report /by 31/4/2025 1800", CommandType.DEADLINE));
+
+        assertEquals("That date is incorrect. Please enter a valid calendar date.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void parseTask_deadlineWithInvalidTime_exceptionThrown() {
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask(
+                        "deadline submit report /by 2/12/2019 2400", CommandType.DEADLINE));
+
+        assertEquals("Please use a deadline date like 2/12/2019 1800 or 2019-12-02.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void parseTask_validEvent_returnsEvent()
+            throws HenryException, InvalidDateException {
         Task task = Parser.parseTask(
                 "event project meeting /from 2pm /to 3pm", CommandType.EVENT);
 

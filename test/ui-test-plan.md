@@ -853,14 +853,17 @@ T | 0 | compare A \| B \\ C
 
 ### UI-11: Parse and validate deadline dates
 
-**Aim:** Verify that deadlines are stored as dates and times, displayed in a friendly format, and reject invalid dates.
+**Aim:** Verify that deadlines are stored as dates and times, displayed in a friendly format, and
+distinguish invalid calendar dates from unsupported formats.
 
 | Step | Input |
 | --- | --- |
 | 1 | `deadline return book /by 2/12/2019 1800` |
 | 2 | `deadline impossible date /by 2019-02-29` |
-| 3 | `list` |
-| 4 | `bye` |
+| 3 | `deadline date outside month /by 31/4/2025 1800` |
+| 4 | `deadline unsupported date /by tomorrow` |
+| 5 | `list` |
+| 6 | `bye` |
 
 #### Expected startup output
 
@@ -888,11 +891,25 @@ ____________________________________________________________
 #### Expected output after step 2
 
 ```text
-Please use a deadline date like 2/12/2019 1800 or 2019-12-02.
+That date is incorrect. Please enter a valid calendar date.
 ____________________________________________________________
 ```
 
 #### Expected output after step 3
+
+```text
+That date is incorrect. Please enter a valid calendar date.
+____________________________________________________________
+```
+
+#### Expected output after step 4
+
+```text
+Please use a deadline date like 2/12/2019 1800 or 2019-12-02.
+____________________________________________________________
+```
+
+#### Expected output after step 5
 
 ```text
 Here's what's ahead:
@@ -900,14 +917,14 @@ Here's what's ahead:
 ____________________________________________________________
 ```
 
-#### Expected output after step 4
+#### Expected output after step 6
 
 ```text
 That's all for now. Take care out there.
 ____________________________________________________________
 ```
 
-#### Expected `data/henry.txt` after step 4
+#### Expected `data/henry.txt` after step 6
 
 ```text
 D | 0 | return book | 2019-12-02T18:00

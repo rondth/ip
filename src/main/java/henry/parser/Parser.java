@@ -1,9 +1,15 @@
 package henry.parser;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.time.format.DateTimeParseException;
+import java.time.format.ResolverStyle;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import henry.exception.HenryException;
+import henry.exception.InvalidDateException;
 import henry.task.Deadline;
 import henry.task.Event;
 import henry.task.Task;
@@ -16,6 +22,11 @@ public class Parser {
     private static final String DEADLINE_SEPARATOR = "/by";
     private static final String EVENT_START_SEPARATOR = "/from";
     private static final String EVENT_END_SEPARATOR = "/to";
+    private static final DateTimeFormatter SLASH_DATE_FORMATTER =
+            DateTimeFormatter.ofPattern("d/M/uuuu").withResolverStyle(ResolverStyle.STRICT);
+    private static final Pattern SLASH_DATE_TIME_PATTERN =
+            Pattern.compile("(\\d{1,2}/\\d{1,2}/\\d{4}) \\d{4}");
+    private static final Pattern ISO_DATE_PATTERN = Pattern.compile("(\\d{4}-\\d{2}-\\d{2})");
 
     private Parser() {
     }
@@ -87,9 +98,11 @@ public class Parser {
      * @param input complete user input.
      * @param commandType task command to parse.
      * @return parsed task.
-     * @throws HenryException if required task details are missing or invalid.
+     * @throws HenryException if required task details are missing or malformed.
+     * @throws InvalidDateException if a deadline contains an impossible calendar date.
      */
-    public static Task parseTask(String input, CommandType commandType) throws HenryException {
+    public static Task parseTask(String input, CommandType commandType)
+            throws HenryException, InvalidDateException {
         return switch (commandType) {
             case TODO -> parseTodo(input);
             case DEADLINE -> parseDeadline(input);
@@ -107,7 +120,8 @@ public class Parser {
         return new Todo(description);
     }
 
-    private static Deadline parseDeadline(String input) throws HenryException {
+    private static Deadline parseDeadline(String input)
+            throws HenryException, InvalidDateException {
         String taskDetails = extractArguments(input);
         int bySeparatorIndex = taskDetails.indexOf(DEADLINE_SEPARATOR);
         if (bySeparatorIndex < 0) {
@@ -129,8 +143,31 @@ public class Parser {
             LocalDateTime deadline = Deadline.parseBy(by);
             return new Deadline(description, deadline);
         } catch (DateTimeParseException e) {
+            if (hasInvalidCalendarDate(by)) {
+                throw new InvalidDateException();
+            }
             throw new HenryException(
                     "Please use a deadline date like 2/12/2019 1800 or 2019-12-02.");
+        }
+    }
+
+    private static boolean hasInvalidCalendarDate(String input) {
+        Matcher slashDateTimeMatcher = SLASH_DATE_TIME_PATTERN.matcher(input);
+        if (slashDateTimeMatcher.matches()) {
+            return cannotParseDate(slashDateTimeMatcher.group(1), SLASH_DATE_FORMATTER);
+        }
+
+        Matcher isoDateMatcher = ISO_DATE_PATTERN.matcher(input);
+        return isoDateMatcher.matches()
+                && cannotParseDate(isoDateMatcher.group(1), DateTimeFormatter.ISO_LOCAL_DATE);
+    }
+
+    private static boolean cannotParseDate(String input, DateTimeFormatter formatter) {
+        try {
+            LocalDate.parse(input, formatter);
+            return false;
+        } catch (DateTimeParseException e) {
+            return true;
         }
     }
 

@@ -5,6 +5,7 @@ import java.nio.file.Path;
 import java.util.List;
 
 import henry.exception.HenryException;
+import henry.exception.InvalidDateException;
 import henry.parser.CommandType;
 import henry.parser.Parser;
 import henry.storage.Storage;
@@ -125,6 +126,8 @@ public class Henry {
                         "I'm not quite sure what you mean. Try todo, deadline, event, list, find, "
                                 + "mark, unmark, delete, or bye.");
             };
+        } catch (InvalidDateException e) {
+            return e.getMessage();
         } catch (HenryException e) {
             return e.getMessage();
         } catch (IOException e) {
