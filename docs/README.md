@@ -197,13 +197,11 @@ Short form: `del 1`
 
 ### Saying goodbye: `bye`
 
-Displays Henry's farewell message.
+Displays Henry's farewell message and closes the application window.
 
 **Format:** `bye`
 
 Short form: `b`
-
-When using the desktop interface, close the application window after you are finished.
 
 ### Saving data
 

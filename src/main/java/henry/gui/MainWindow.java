@@ -2,6 +2,7 @@ package henry.gui;
 
 import henry.Henry;
 import henry.parser.CommandType;
+import javafx.animation.PauseTransition;
 import javafx.application.Platform;
 import javafx.beans.binding.Bindings;
 import javafx.fxml.FXML;
@@ -10,6 +11,7 @@ import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
 import javafx.scene.layout.VBox;
+import javafx.util.Duration;
 
 /**
  * Controls Henry's main chat window.
@@ -69,6 +71,13 @@ public class MainWindow {
                 DialogBox.createUserDialog(input, userImage),
                 DialogBox.createHenryDialog(response, henryImage, commandType));
         userInput.clear();
+
+        if (commandType == CommandType.BYE) {
+            PauseTransition exitDelay = new PauseTransition(Duration.seconds(1));
+            exitDelay.setOnFinished(event -> Platform.exit());
+            exitDelay.play();
+            return;
+        }
         userInput.requestFocus();
     }
 
