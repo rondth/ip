@@ -2,6 +2,7 @@
 
 **Henry** is a friendly desktop chatbot that helps you create, track, search, and complete tasks
 using simple text commands.
+![Henry user interface](Ui.png)
 
 ## User Guide
 
