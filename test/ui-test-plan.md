@@ -44,7 +44,7 @@ Use `<empty input>` when the user presses Enter without typing any characters. U
 | --- | --- |
 | 1 | `todo borrow book` |
 | 2 | `deadline do homework /by 2/12/2019 1800` |
-| 3 | `event project meeting /from Mon 2pm /to 4pm` |
+| 3 | `event project meeting /from 2/12/2019 1400 /to 2/12/2019 1600` |
 | 4 | `list` |
 | 5 | `bye` |
 
@@ -84,7 +84,7 @@ ____________________________________________________________
 
 ```text
 Got it. I've added this to our route:
-[E][ ] project meeting (from: Mon 2pm to: 4pm)
+[E][ ] project meeting (from: Dec 2 2019 2:00 PM to: Dec 2 2019 4:00 PM)
 You now have 3 tasks on the list.
 ____________________________________________________________
 ```
@@ -95,7 +95,7 @@ ____________________________________________________________
 Here's what's ahead:
 1. [T][ ] borrow book
 2. [D][ ] do homework (by: Dec 2 2019 6:00 PM)
-3. [E][ ] project meeting (from: Mon 2pm to: 4pm)
+3. [E][ ] project meeting (from: Dec 2 2019 2:00 PM to: Dec 2 2019 4:00 PM)
 ____________________________________________________________
 ```
 
@@ -121,7 +121,10 @@ ____________________________________________________________
 | 7 | `event /from 2pm /to 3pm` |
 | 8 | `event meeting /from /to 3pm` |
 | 9 | `event meeting /from 2pm /to` |
-| 10 | `bye` |
+| 10 | `event meeting /from tomorrow /to later` |
+| 11 | `event meeting /from 31/4/2025 1400 /to 1/5/2025 1500` |
+| 12 | `event meeting /from 2/12/2019 1500 /to 2/12/2019 1400` |
+| 13 | `bye` |
 
 #### Expected startup output
 
@@ -168,7 +171,7 @@ ____________________________________________________________
 #### Expected output after step 5
 
 ```text
-An event needs '/from' and '/to'. For example: event meeting /from 2pm /to 3pm
+An event needs '/from' and '/to'. For example: event meeting /from 2/12/2019 1400 /to 2/12/2019 1500
 ____________________________________________________________
 ```
 
@@ -201,6 +204,27 @@ ____________________________________________________________
 ```
 
 #### Expected output after step 10
+
+```text
+Please use an event date like 2/12/2019 1400 or 2019-12-02.
+____________________________________________________________
+```
+
+#### Expected output after step 11
+
+```text
+That date is incorrect. Please enter a valid calendar date.
+____________________________________________________________
+```
+
+#### Expected output after step 12
+
+```text
+An event's ending time must be after its starting time.
+____________________________________________________________
+```
+
+#### Expected output after step 13
 
 ```text
 That's all for now. Take care out there.
@@ -415,15 +439,17 @@ ____________________________________________________________
 
 ### UI-5: Trim input and reject non-command text
 
-**Aim:** Verify surrounding-whitespace trimming, exact command-word matching, blank-input handling, and preserved task state.
+**Aim:** Verify surrounding-whitespace trimming, exact command-word matching, blank-input handling,
+help output, and preserved task state.
 
 | Step | Input |
 | --- | --- |
 | 1 | `   todo padded task   ` |
 | 2 | `todolist` |
 | 3 | `<empty input>` |
-| 4 | `list` |
-| 5 | `bye` |
+| 4 | `help` |
+| 5 | `list` |
+| 6 | `bye` |
 
 #### Expected startup output
 
@@ -451,18 +477,35 @@ ____________________________________________________________
 #### Expected output after step 2
 
 ```text
-I'm not quite sure what you mean. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+I'm not quite sure what you mean. Try todo, deadline, event, list, find, mark, unmark, delete, help, or bye.
 ____________________________________________________________
 ```
 
 #### Expected output after step 3
 
 ```text
-I'm not quite sure what you mean. Try todo, deadline, event, list, find, mark, unmark, delete, or bye.
+I'm not quite sure what you mean. Try todo, deadline, event, list, find, mark, unmark, delete, help, or bye.
 ____________________________________________________________
 ```
 
 #### Expected output after step 4
+
+```text
+Here are the commands I can help with:
+todo DESCRIPTION - Add a todo.
+deadline DESCRIPTION /by DATE - Add a deadline.
+event DESCRIPTION /from START_DATE /to END_DATE - Add an event.
+list - Show all tasks.
+find KEYWORD - Find tasks by description.
+mark TASK_NUMBER - Mark a task as completed.
+unmark TASK_NUMBER - Mark a task as not completed.
+delete TASK_NUMBER - Delete a task.
+help - Show this command list.
+bye - Exit Henry.
+____________________________________________________________
+```
+
+#### Expected output after step 5
 
 ```text
 Here's what's ahead:
@@ -470,7 +513,7 @@ Here's what's ahead:
 ____________________________________________________________
 ```
 
-#### Expected output after step 5
+#### Expected output after step 6
 
 ```text
 That's all for now. Take care out there.
@@ -489,7 +532,7 @@ and the final file representation after add, mark, and delete operations.
 | 3 | `delete 1` |
 | 4 | `todo read book` |
 | 5 | `deadline return book /by 2019-06-06` |
-| 6 | `event project meeting /from Aug 6th 2pm /to 4pm` |
+| 6 | `event project meeting /from 6/8/2019 1400 /to 6/8/2019 1600` |
 | 7 | `todo join sports club` |
 | 8 | `todo borrow book` |
 | 9 | `mark 1` |
@@ -558,7 +601,7 @@ ____________________________________________________________
 
 ```text
 Got it. I've added this to our route:
-[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 6 2019 2:00 PM to: Aug 6 2019 4:00 PM)
 You now have 3 tasks on the list.
 ____________________________________________________________
 ```
@@ -609,7 +652,7 @@ ____________________________________________________________
 
 ```text
 All right, I've cleared this from the list:
-[E][ ] project meeting (from: Aug 6th 2pm to: 4pm)
+[E][ ] project meeting (from: Aug 6 2019 2:00 PM to: Aug 6 2019 4:00 PM)
 You now have 4 tasks on the list.
 ____________________________________________________________
 ```
@@ -664,7 +707,7 @@ T | 0 | borrow book
 ```text
 T | 1 | read book
 D | 0 | return book | 2019-06-06T00:00
-E | 1 | project meeting | Aug 6th 2pm | 4pm
+E | 1 | project meeting | 2019-08-06T14:00 | 2019-08-06T16:00
 ```
 
 | Step | Input |
@@ -692,7 +735,7 @@ ____________________________________________________________
 Here's what's ahead:
 1. [T][X] read book
 2. [D][ ] return book (by: Jun 6 2019 12:00 AM)
-3. [E][X] project meeting (from: Aug 6th 2pm to: 4pm)
+3. [E][X] project meeting (from: Aug 6 2019 2:00 PM to: Aug 6 2019 4:00 PM)
 ____________________________________________________________
 ```
 
@@ -715,7 +758,7 @@ T | 1 | compare A \| B
 
 X | 0 | unknown task
 D | 2 | invalid status | Friday
-E | 0 | missing end time | 2pm
+E | 0 | missing end time | 2019-12-02T14:00
 T | 0 | unexpected | extra field
 D | 0 | use C:\\temp | 2019-12-02T18:00
 ```
@@ -1042,7 +1085,7 @@ ____________________________________________________________
 | --- | --- |
 | 1 | `t borrow book` |
 | 2 | `d return book /by 2019-06-06` |
-| 3 | `e project meeting /from 2pm /to 3pm` |
+| 3 | `e project meeting /from 2/12/2019 1400 /to 2/12/2019 1500` |
 | 4 | `l` |
 | 5 | `m 1` |
 | 6 | `u 1` |
@@ -1086,7 +1129,7 @@ ____________________________________________________________
 
 ```text
 Got it. I've added this to our route:
-[E][ ] project meeting (from: 2pm to: 3pm)
+[E][ ] project meeting (from: Dec 2 2019 2:00 PM to: Dec 2 2019 3:00 PM)
 You now have 3 tasks on the list.
 ____________________________________________________________
 ```
@@ -1097,7 +1140,7 @@ ____________________________________________________________
 Here's what's ahead:
 1. [T][ ] borrow book
 2. [D][ ] return book (by: Jun 6 2019 12:00 AM)
-3. [E][ ] project meeting (from: 2pm to: 3pm)
+3. [E][ ] project meeting (from: Dec 2 2019 2:00 PM to: Dec 2 2019 3:00 PM)
 ____________________________________________________________
 ```
 
@@ -1130,7 +1173,7 @@ ____________________________________________________________
 
 ```text
 All right, I've cleared this from the list:
-[E][ ] project meeting (from: 2pm to: 3pm)
+[E][ ] project meeting (from: Dec 2 2019 2:00 PM to: Dec 2 2019 3:00 PM)
 You now have 2 tasks on the list.
 ____________________________________________________________
 ```

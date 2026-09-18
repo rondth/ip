@@ -44,14 +44,15 @@ public class StorageTest {
         List<Task> tasks = List.of(
                 todo,
                 new Deadline("submit report", LocalDateTime.of(2025, 8, 26, 18, 0)),
-                new Event("meeting", "2pm", "3pm"));
+                new Event("meeting", LocalDateTime.of(2025, 8, 27, 14, 0),
+                        LocalDateTime.of(2025, 8, 27, 15, 0)));
 
         storage.save(tasks);
 
         assertEquals(List.of(
                 "T | 1 | read book",
                 "D | 0 | submit report | 2025-08-26T18:00",
-                "E | 0 | meeting | 2pm | 3pm"),
+                "E | 0 | meeting | 2025-08-27T14:00 | 2025-08-27T15:00"),
                 Files.readAllLines(dataFile, StandardCharsets.UTF_8));
     }
 
@@ -61,7 +62,8 @@ public class StorageTest {
         Storage storage = new Storage(dataFile);
         List<Task> originalTasks = List.of(
                 new Todo("read | revise \\ notes"),
-                new Event("team | meeting", "room \\ 1", "room | 2"));
+                new Event("team | meeting", LocalDateTime.of(2025, 8, 27, 14, 0),
+                        LocalDateTime.of(2025, 8, 27, 15, 0)));
 
         storage.save(originalTasks);
         Storage.LoadResult result = storage.load();
@@ -79,7 +81,7 @@ public class StorageTest {
                 "T | 1 | completed todo",
                 "",
                 "D | 0 | submit report | 2025-08-26T18:00",
-                "E | 0 | meeting | 2pm | 3pm",
+                "E | 0 | meeting | 2025-08-27T14:00 | 2025-08-27T15:00",
                 "X | 0 | unknown type",
                 "T | 2 | invalid status",
                 "D | 0 | invalid deadline | tomorrow",
@@ -92,7 +94,7 @@ public class StorageTest {
         assertEquals(List.of(
                 "T | 1 | completed todo",
                 "D | 0 | submit report | 2025-08-26T18:00",
-                "E | 0 | meeting | 2pm | 3pm"),
+                "E | 0 | meeting | 2025-08-27T14:00 | 2025-08-27T15:00"),
                 result.tasks().stream().map(Task::toFileString).toList());
     }
 

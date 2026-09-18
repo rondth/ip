@@ -19,6 +19,18 @@ import henry.ui.Ui;
 public class Henry {
     private static final Path DEFAULT_DATA_FILE_PATH = Path.of("data", "henry.txt");
     private static final String GOODBYE_MESSAGE = "That's all for now. Take care out there.";
+    private static final String HELP_MESSAGE = String.join("\n",
+            "Here are the commands I can help with:",
+            "todo DESCRIPTION - Add a todo.",
+            "deadline DESCRIPTION /by DATE - Add a deadline.",
+            "event DESCRIPTION /from START_DATE /to END_DATE - Add an event.",
+            "list - Show all tasks.",
+            "find KEYWORD - Find tasks by description.",
+            "mark TASK_NUMBER - Mark a task as completed.",
+            "unmark TASK_NUMBER - Mark a task as not completed.",
+            "delete TASK_NUMBER - Delete a task.",
+            "help - Show this command list.",
+            "bye - Exit Henry.");
 
     private final Storage storage;
     private final TaskList tasks;
@@ -116,6 +128,7 @@ public class Henry {
         try {
             return switch (commandType) {
                 case BYE -> GOODBYE_MESSAGE;
+                case HELP -> HELP_MESSAGE;
                 case LIST -> formatTaskList("Here's what's ahead:", tasks.asList());
                 case FIND -> findTasks(command);
                 case MARK, UNMARK -> updateTaskStatus(command, commandType);
@@ -124,7 +137,7 @@ public class Henry {
                         Parser.parseTask(command, commandType));
                 case UNKNOWN -> throw new HenryException(
                         "I'm not quite sure what you mean. Try todo, deadline, event, list, find, "
-                                + "mark, unmark, delete, or bye.");
+                                + "mark, unmark, delete, help, or bye.");
             };
         } catch (InvalidDateException e) {
             return e.getMessage();
@@ -136,16 +149,30 @@ public class Henry {
     }
 
     private String addTask(Task task) throws IOException {
+        int originalTaskCount = tasks.size();
         tasks.add(task);
-        saveOrRollback(() -> tasks.delete(tasks.size() - 1));
+        assert tasks.size() == originalTaskCount + 1
+                : "Adding a task should increase the task count by one";
+        saveOrRollback(() -> {
+            tasks.delete(tasks.size() - 1);
+            assert tasks.size() == originalTaskCount
+                    : "A failed addition should restore the original task count";
+        });
         return "Got it. I've added this to our route:\n" + task
                 + "\n" + formatTaskCount();
     }
 
     private String deleteTask(String command) throws HenryException, IOException {
         int taskIndex = Parser.parseTaskIndex(command, CommandType.DELETE, tasks.size());
+        int originalTaskCount = tasks.size();
         Task removedTask = tasks.delete(taskIndex);
-        saveOrRollback(() -> tasks.add(taskIndex, removedTask));
+        assert tasks.size() == originalTaskCount - 1
+                : "Deleting a task should reduce the task count by one";
+        saveOrRollback(() -> {
+            tasks.add(taskIndex, removedTask);
+            assert tasks.size() == originalTaskCount
+                    : "A failed deletion should restore the original task count";
+        });
         return "All right, I've cleared this from the list:\n" + removedTask
                 + "\n" + formatTaskCount();
     }
@@ -165,7 +192,13 @@ public class Henry {
         boolean wasDone = task.isDone();
         boolean isDone = commandType == CommandType.MARK;
         tasks.setDone(taskIndex, isDone);
-        saveOrRollback(() -> tasks.setDone(taskIndex, wasDone));
+        assert task.isDone() == isDone
+                : "Updating a task should apply the requested completion status";
+        saveOrRollback(() -> {
+            tasks.setDone(taskIndex, wasDone);
+            assert task.isDone() == wasDone
+                    : "A failed status update should restore the original status";
+        });
 
         if (isDone) {
             return "Nice, that one's done.\n" + task;

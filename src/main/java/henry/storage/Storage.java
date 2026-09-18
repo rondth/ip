@@ -128,12 +128,13 @@ public class Storage {
             case "D" -> {
                 requireFieldCount(fields, 4, taskType);
                 yield new Deadline(
-                        description, parseDeadline(requireText(fields.get(3), "deadline")));
+                        description, parseDateTime(requireText(fields.get(3), "deadline")));
             }
             case "E" -> {
                 requireFieldCount(fields, 5, taskType);
-                yield new Event(description, requireText(fields.get(3), "start time"),
-                        requireText(fields.get(4), "end time"));
+                yield new Event(description,
+                        parseDateTime(requireText(fields.get(3), "start time")),
+                        parseDateTime(requireText(fields.get(4), "end time")));
             }
             default -> throw new IllegalArgumentException("Unknown task type: " + taskType);
         };
@@ -143,17 +144,17 @@ public class Storage {
     }
 
     /**
-     * Parses the ISO-8601 date-time representation written by {@link Deadline}.
+     * Parses an ISO-8601 date-time representation written by a dated task.
      *
-     * @param deadline stored deadline value.
-     * @return parsed deadline value.
+     * @param dateTime stored date-time value.
+     * @return parsed date-time value.
      * @throws IllegalArgumentException if the stored value is not a valid date-time.
      */
-    private static LocalDateTime parseDeadline(String deadline) {
+    private static LocalDateTime parseDateTime(String dateTime) {
         try {
-            return LocalDateTime.parse(deadline);
+            return LocalDateTime.parse(dateTime);
         } catch (DateTimeParseException e) {
-            throw new IllegalArgumentException("Invalid deadline", e);
+            throw new IllegalArgumentException("Invalid date and time", e);
         }
     }
 

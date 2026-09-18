@@ -10,6 +10,7 @@ public enum CommandType {
     UNMARK("unmark", true, "u"),
     DELETE("delete", true, "del"),
     FIND("find", true, "f"),
+    HELP("help", false),
     TODO("todo", true, "t"),
     DEADLINE("deadline", true, "d"),
     EVENT("event", true, "e"),

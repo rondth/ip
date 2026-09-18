@@ -8,21 +8,17 @@ using simple text commands.
 ### Quick start
 
 1. Ensure that Java 25 is installed.
-2. Open a terminal in the project folder.
-3. Start Henry:
+2. Download `henry.jar` from the
+   [latest release](https://github.com/rondth/ip/releases/latest) into an empty folder.
+3. Open a terminal in that folder.
+4. Start Henry:
 
    ```shell
-   ./gradlew run
+   java -jar henry.jar
    ```
 
-   On Windows, use:
-
-   ```shell
-   gradlew.bat run
-   ```
-
-4. Type a command into the message box.
-5. Press <kbd>Enter</kbd> or click **Send**.
+5. Type a command into the message box.
+6. Press <kbd>Enter</kbd> or click **Send**.
 
 > [!IMPORTANT]
 > Commands and their aliases must be entered in lowercase.
@@ -95,21 +91,24 @@ Short form: `d submit report /by 2/12/2019 1800`
 
 Adds a task with a start and end time.
 
-**Format:** `event DESCRIPTION /from START /to END`
+**Format:** `event DESCRIPTION /from START_DATE /to END_DATE`
+
+Start and end dates use the same formats as deadlines. The ending date and time must be after the
+starting date and time.
 
 **Example:**
 
 ```text
-event project meeting /from Monday 2pm /to 4pm
+event project meeting /from 2/12/2019 1400 /to 2/12/2019 1600
 ```
 
 Henry displays:
 
 ```text
-[E][ ] project meeting (from: Monday 2pm to: 4pm)
+[E][ ] project meeting (from: Dec 2 2019 2:00 PM to: Dec 2 2019 4:00 PM)
 ```
 
-Short form: `e project meeting /from Monday 2pm /to 4pm`
+Short form: `e project meeting /from 2/12/2019 1400 /to 2/12/2019 1600`
 
 ### Viewing all tasks: `list`
 
@@ -194,6 +193,12 @@ The remaining tasks are renumbered automatically.
 
 Short form: `del 1`
 
+### Viewing available commands: `help`
+
+Shows a summary of every command Henry supports.
+
+**Format:** `help`
+
 ### Saying goodbye: `bye`
 
 Displays Henry's farewell message.
@@ -222,12 +227,13 @@ No manual save command is required.
 | --- | --- | --- |
 | Add a todo | `todo DESCRIPTION` | `t DESCRIPTION` |
 | Add a deadline | `deadline DESCRIPTION /by DATE` | `d DESCRIPTION /by DATE` |
-| Add an event | `event DESCRIPTION /from START /to END` | `e DESCRIPTION /from START /to END` |
+| Add an event | `event DESCRIPTION /from START_DATE /to END_DATE` | `e DESCRIPTION /from START_DATE /to END_DATE` |
 | View all tasks | `list` | `l` |
 | Find tasks | `find KEYWORD` | `f KEYWORD` |
 | Mark a task | `mark TASK_NUMBER` | `m TASK_NUMBER` |
 | Unmark a task | `unmark TASK_NUMBER` | `u TASK_NUMBER` |
 | Delete a task | `delete TASK_NUMBER` | `del TASK_NUMBER` |
+| View available commands | `help` | None |
 | Say goodbye | `bye` | `b` |
 
 ## Setting up Henry in IntelliJ IDEA
@@ -243,7 +249,7 @@ Prerequisites: JDK 25 and a recent version of IntelliJ IDEA.
 
 Keep `src/main/java` as the root folder for Java source files.
 
-## Creating and running the JAR
+## Creating and running the JAR as a developer
 
 Create the executable JAR from the project root:
 

@@ -171,13 +171,14 @@ public class Parser {
         }
     }
 
-    private static Event parseEvent(String input) throws HenryException {
+    private static Event parseEvent(String input) throws HenryException, InvalidDateException {
         String taskDetails = extractArguments(input);
         int fromSeparatorIndex = taskDetails.indexOf(EVENT_START_SEPARATOR);
         if (fromSeparatorIndex < 0) {
             throw new HenryException(
                     "An event needs '/from' and '/to'. "
-                            + "For example: event meeting /from 2pm /to 3pm");
+                            + "For example: event meeting /from 2/12/2019 1400 "
+                            + "/to 2/12/2019 1500");
         }
 
         int fromValueIndex = fromSeparatorIndex + EVENT_START_SEPARATOR.length();
@@ -199,7 +200,25 @@ public class Parser {
         if (to.isEmpty()) {
             throw new HenryException("An event needs an ending time after '/to'.");
         }
-        return new Event(description, from, to);
+        LocalDateTime startTime = parseEventDateTime(from);
+        LocalDateTime endTime = parseEventDateTime(to);
+        if (!endTime.isAfter(startTime)) {
+            throw new HenryException("An event's ending time must be after its starting time.");
+        }
+        return new Event(description, startTime, endTime);
+    }
+
+    private static LocalDateTime parseEventDateTime(String input)
+            throws HenryException, InvalidDateException {
+        try {
+            return Deadline.parseBy(input);
+        } catch (DateTimeParseException e) {
+            if (hasInvalidCalendarDate(input)) {
+                throw new InvalidDateException();
+            }
+            throw new HenryException(
+                    "Please use an event date like 2/12/2019 1400 or 2019-12-02.");
+        }
     }
 
     private static String extractArguments(String input) {

@@ -63,13 +63,33 @@ public class HenryTest {
     }
 
     @Test
+    public void getResponse_help_returnsCommandList() {
+        Henry henry = new Henry(temporaryDirectory.resolve("henry.txt"));
+
+        String response = henry.getResponse("help");
+
+        assertEquals("Here are the commands I can help with:\n"
+                + "todo DESCRIPTION - Add a todo.\n"
+                + "deadline DESCRIPTION /by DATE - Add a deadline.\n"
+                + "event DESCRIPTION /from START_DATE /to END_DATE - Add an event.\n"
+                + "list - Show all tasks.\n"
+                + "find KEYWORD - Find tasks by description.\n"
+                + "mark TASK_NUMBER - Mark a task as completed.\n"
+                + "unmark TASK_NUMBER - Mark a task as not completed.\n"
+                + "delete TASK_NUMBER - Delete a task.\n"
+                + "help - Show this command list.\n"
+                + "bye - Exit Henry.", response);
+        assertEquals(CommandType.HELP, henry.getLastCommandType());
+    }
+
+    @Test
     public void getResponse_invalidCommand_returnsErrorWithoutThrowing() {
         Henry henry = new Henry(temporaryDirectory.resolve("henry.txt"));
 
         String response = henry.getResponse("dance");
 
         assertEquals("I'm not quite sure what you mean. Try todo, deadline, event, list, find, "
-                + "mark, unmark, delete, or bye.", response);
+                + "mark, unmark, delete, help, or bye.", response);
         assertEquals(CommandType.UNKNOWN, henry.getLastCommandType());
     }
 

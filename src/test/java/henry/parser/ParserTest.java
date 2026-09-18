@@ -25,6 +25,7 @@ public class ParserTest {
         assertEquals(CommandType.UNMARK, Parser.parseCommandType("unmark"));
         assertEquals(CommandType.DELETE, Parser.parseCommandType("delete"));
         assertEquals(CommandType.FIND, Parser.parseCommandType("find"));
+        assertEquals(CommandType.HELP, Parser.parseCommandType("help"));
         assertEquals(CommandType.TODO, Parser.parseCommandType("todo"));
         assertEquals(CommandType.DEADLINE, Parser.parseCommandType("deadline"));
         assertEquals(CommandType.EVENT, Parser.parseCommandType("event"));
@@ -36,7 +37,8 @@ public class ParserTest {
         assertEquals(CommandType.FIND, Parser.parseCommandType("find book"));
         assertEquals(CommandType.TODO, Parser.parseCommandType("todo read book"));
         assertEquals(CommandType.EVENT,
-                Parser.parseCommandType("event meeting /from 2pm /to 3pm"));
+                Parser.parseCommandType(
+                        "event meeting /from 2/12/2019 1400 /to 2/12/2019 1500"));
     }
 
     @Test
@@ -51,7 +53,8 @@ public class ParserTest {
         assertEquals(CommandType.DEADLINE,
                 Parser.parseCommandType("d submit report /by 2019-12-02"));
         assertEquals(CommandType.EVENT,
-                Parser.parseCommandType("e meeting /from 2pm /to 3pm"));
+                Parser.parseCommandType(
+                        "e meeting /from 2/12/2019 1400 /to 2/12/2019 1500"));
     }
 
     @Test
@@ -65,6 +68,7 @@ public class ParserTest {
         assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("deluxe 1"));
         assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("b now"));
         assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("l extra"));
+        assertEquals(CommandType.UNKNOWN, Parser.parseCommandType("help me"));
     }
 
     @Test
@@ -234,25 +238,28 @@ public class ParserTest {
     public void parseTask_validEvent_returnsEvent()
             throws HenryException, InvalidDateException {
         Task task = Parser.parseTask(
-                "event project meeting /from 2pm /to 3pm", CommandType.EVENT);
+                "event project meeting /from 2/12/2019 1400 /to 2/12/2019 1500",
+                CommandType.EVENT);
 
         assertInstanceOf(Event.class, task);
-        assertEquals("E | 0 | project meeting | 2pm | 3pm", task.toFileString());
+        assertEquals("E | 0 | project meeting | 2019-12-02T14:00 | 2019-12-02T15:00",
+                task.toFileString());
     }
 
     @Test
     public void parseTask_eventWithoutFromSeparator_exceptionThrown() {
         HenryException exception = assertThrows(HenryException.class, () ->
-                Parser.parseTask("event meeting /to 3pm", CommandType.EVENT));
+                Parser.parseTask("event meeting /to 2/12/2019 1500", CommandType.EVENT));
 
         assertEquals("An event needs '/from' and '/to'. "
-                + "For example: event meeting /from 2pm /to 3pm", exception.getMessage());
+                + "For example: event meeting /from 2/12/2019 1400 /to 2/12/2019 1500",
+                exception.getMessage());
     }
 
     @Test
     public void parseTask_eventWithoutToSeparator_exceptionThrown() {
         HenryException exception = assertThrows(HenryException.class, () ->
-                Parser.parseTask("event meeting /from 2pm", CommandType.EVENT));
+                Parser.parseTask("event meeting /from 2/12/2019 1400", CommandType.EVENT));
 
         assertEquals("An event needs an ending time introduced by '/to'.", exception.getMessage());
     }
@@ -260,7 +267,8 @@ public class ParserTest {
     @Test
     public void parseTask_eventWithoutDescription_exceptionThrown() {
         HenryException exception = assertThrows(HenryException.class, () ->
-                Parser.parseTask("event /from 2pm /to 3pm", CommandType.EVENT));
+                Parser.parseTask(
+                        "event /from 2/12/2019 1400 /to 2/12/2019 1500", CommandType.EVENT));
 
         assertEquals("An event needs a description before '/from'.", exception.getMessage());
     }
@@ -268,7 +276,7 @@ public class ParserTest {
     @Test
     public void parseTask_eventWithoutStartTime_exceptionThrown() {
         HenryException exception = assertThrows(HenryException.class, () ->
-                Parser.parseTask("event meeting /from /to 3pm", CommandType.EVENT));
+                Parser.parseTask("event meeting /from /to 2/12/2019 1500", CommandType.EVENT));
 
         assertEquals("An event needs a starting time after '/from'.", exception.getMessage());
     }
@@ -276,9 +284,41 @@ public class ParserTest {
     @Test
     public void parseTask_eventWithoutEndTime_exceptionThrown() {
         HenryException exception = assertThrows(HenryException.class, () ->
-                Parser.parseTask("event meeting /from 2pm /to", CommandType.EVENT));
+                Parser.parseTask("event meeting /from 2/12/2019 1400 /to", CommandType.EVENT));
 
         assertEquals("An event needs an ending time after '/to'.", exception.getMessage());
+    }
+
+    @Test
+    public void parseTask_eventWithInvalidCalendarDate_exceptionThrown() {
+        InvalidDateException exception = assertThrows(InvalidDateException.class, () ->
+                Parser.parseTask(
+                        "event meeting /from 31/4/2025 1400 /to 1/5/2025 1500",
+                        CommandType.EVENT));
+
+        assertEquals("That date is incorrect. Please enter a valid calendar date.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void parseTask_eventWithUnsupportedDateFormat_exceptionThrown() {
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask(
+                        "event meeting /from tomorrow /to later", CommandType.EVENT));
+
+        assertEquals("Please use an event date like 2/12/2019 1400 or 2019-12-02.",
+                exception.getMessage());
+    }
+
+    @Test
+    public void parseTask_eventEndingBeforeStart_exceptionThrown() {
+        HenryException exception = assertThrows(HenryException.class, () ->
+                Parser.parseTask(
+                        "event meeting /from 2/12/2019 1500 /to 2/12/2019 1400",
+                        CommandType.EVENT));
+
+        assertEquals("An event's ending time must be after its starting time.",
+                exception.getMessage());
     }
 
     @Test
